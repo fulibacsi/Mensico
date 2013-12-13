@@ -83,7 +83,7 @@ class MainWindow(Tk):
         Label(self, text = 'MensIco', underline = 1).pack(side = TOP, padx = 5, pady = 5)
         
         # MensIco Icon
-        self.icon = PhotoImage(file = 'data/Icon_v1.3.gif')
+        self.icon = PhotoImage(file = 'data/Icon.gif')
         self.iconLabel = Label(self, text = 'MensIco', image = self.icon)
         self.iconLabel.icon = self.icon
         self.iconLabel.pack(side = LEFT, padx = 5, pady = 5)
