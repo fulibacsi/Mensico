@@ -924,7 +924,6 @@ class Agent:
 class Board:
     """GameBoard - Plays the game."""
 
-
     # init the game
     def __init__(self, size_x = 5, size_y = 8, beta = 0.5, human = 0):
         self.beta = beta
@@ -932,8 +931,16 @@ class Board:
         self.sizeY = size_y
         self.round = 0
         self.gameOver = 0
-        self.player1 = Agent(0, self.sizeX / 2 + 1, 0, self.sizeX / 2 + 1, ProbMat(self.sizeX, self.sizeY), ProbMat(self.sizeX, self.sizeY))
-        self.player2 = Agent(0, self.sizeX / 2 + 1, 0, self.sizeX / 2 + 1, ProbMat(self.sizeX, self.sizeY), ProbMat(self.sizeX, self.sizeY))
+        self.player1 = Agent(0,
+                             self.sizeX / 2 + 1, 0,
+                             self.sizeX / 2 + 1,
+                             ProbMat(self.sizeX, self.sizeY),
+                             ProbMat(self.sizeX, self.sizeY))
+        self.player2 = Agent(0,
+                             self.sizeX / 2 + 1, 0,
+                             self.sizeX / 2 + 1,
+                             ProbMat(self.sizeX, self.sizeY),
+                             ProbMat(self.sizeX, self.sizeY))
         self.human = human
 
 
@@ -995,11 +1002,7 @@ class Board:
     # Returns if it is game over
     def isGameOver(self):
         """ Is it game over already? """
-
-        if self.gameOver == 1:
-            return 1
-        else:
-            return 0
+        return self.gameOver
 
 
 

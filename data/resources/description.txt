@@ -1,0 +1,35 @@
+Description:
+This game is a two player turn-based game which is played in a 5 x 8 sized board. The goal of the
+game is to get to the opposite side of the board. To achieve this one must select where he/she
+wants to step and must guess where would his/her opponent step. If one of the player's guess is
+right, his/her opponent must stay in its place. If both players' guess was right, noone steps.
+Both player can stay on the same tile on the same time. If the players reach the opposite side,
+it's draw.
+
+Controls:
+    - Play mode:
+If you want to play against an AI, select the 'Play' option and hit the Launch Button. A new win-
+dow will open, and you will see the board on the left hand side, and the control panel on the
+right hand side. On the board you are playing with the yellow triangle and the blue triangle re-
+presents your opponent. With the left click you can select where you want to step. The reachable
+tiles are lighter. With the right click you can mark your guess. You can change these positions
+until you click on the control panel's 'Step' button, or hit the keyboard's <Space> button. Once
+you hit one of the previously mentioned button, the program evaluate the guesses and the steps,
+and moves the players. The game ends when one of the players wins, or it's a draw. If you want
+to play again, press the 'Reset' button on the control panel.
+If you have a MensIco strategy file from before, you can Load it with the control panel's 'Load'
+button. You can save your opponent's strategy with the 'Save' button.
+
+    - Test mode:
+If you want to test the different learning methods, select the 'Test' option and hit Launch Button.
+A new window will open and you will see some setup options. With the radio buttons, select the de-
+sired learning method, with the scale set how many times you want the computer to play. You can
+also Load a previous strategy file as opponent. When you set up everything, click on the 'Test' but-
+ton. Depending on your hardware and setup this process may take a while. After the program finished
+computing the results will appear on a new window. You can Save the learned strategy in this window,
+if you like. You can also log the results into .csv files with the Log buttons.
+
+If you have any question, suggestion or opinion, please contact me!
+
+Have fun!
+    Füli - fulibacsi@gmail.com
