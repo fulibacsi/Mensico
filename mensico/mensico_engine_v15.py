@@ -43,7 +43,7 @@ from fractions import Fraction
 import itertools
 
 
-# -----------------------------------------------------------------------------------------------------  
+# -----------------------------------------------------------------------------------------------------
 # ----------------------------------------- GLOBAL VARIABLES ------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 
@@ -83,47 +83,47 @@ ERRORTYPE = 1
 VERSION = 'MensIco2 v1.5 beta'
 
 
-# -----------------------------------------------------------------------------------------------------  
+# -----------------------------------------------------------------------------------------------------
 # ------------------------------------------- ProbMat class -------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 
 
 class ProbMat:
     """Storing and managing probability matrices."""
-    
+
     # init a probability matrix - create the matrix itself
     def __init__(self, x = 5, y = 8):
         """ Init a matrix with the given dimensions. """
-        
+
         self.matrix = [[0.0 for col in range(x+2)] for row in range(y)]
         for i in range(2,len(self.matrix)):
             for j in range(1,len(self.matrix[i])-1):
                 self.matrix[i][j] = 1.0/x
         self.matrix[0][(x+2)/2] = 1.0
         for i in range((x+2)/2-1, (x+2)/2+2, 1):
-            self.matrix[1][i] = 0.3               
+            self.matrix[1][i] = 0.3
 
 
     # reset a probability matrix to the initial state
     def __call__(self, x = 5, y = 8):
         """ Reset a matrix with the given dimensions to the initial state. """
-        
+
         self.matrix = [[0.0 for col in range(x+2)] for row in range(y)]
         for i in range(2,len(self.matrix)):
             for j in range(1,len(self.matrix[i])-1):
                 self.matrix[i][j] = 1.0/x
         self.matrix[0][(x+2)/2] = 1.0
         for i in range((x+2)/2-1, (x+2)/2+2, 1):
-            self.matrix[1][i] = 0.3               
- 
- 
-# setters, getters            
-                
-    # get the matrix            
+            self.matrix[1][i] = 0.3
+
+
+# setters, getters
+
+    # get the matrix
     def getMatrix(self):
         return self.matrix
-        
-    # set the matrix to a specified matrix - NOT CHECKING!!!    
+
+    # set the matrix to a specified matrix - NOT CHECKING!!!
     def setMatrix(self, preset_matrix):
         self.matrix = preset_matrix[:]
 
@@ -134,14 +134,14 @@ class ProbMat:
     # set a specified matrix item to a value
     def setMatrixItem(self, x, y, value):
         self.matrix[x][y] = value
-        
-# end of setters, getters        
-        
-    
-    # rescale the probability matrix    
+
+# end of setters, getters
+
+
+    # rescale the probability matrix
     def rescale(self, line = -1):
         """ Rescale the whole matrix, or one of the rows."""
-    
+
         if line == -1:
             # we rescale the whole matrix
             for act in self.matrix:
@@ -170,26 +170,26 @@ class ProbMat:
             # and divide every element by this total value
             for i in range(1,len(act)-1):
                 act[i] = act[i]/summa
-                
-             
-    # log the matrix in a useable form            
+
+
+    # log the matrix in a useable form
     def logMatrix(self, logFileName):
         """ Log the values of the matrix to the specified file."""
-        
+
         try:
             logFile = open(logFileName, 'w')
         except:
             print "Can't write to", logFileName, "!"
             raise
-        logFile.write("x; y; value\n")    
+        logFile.write("x; y; value\n")
         for i in range(0, len(self.matrix)):
             for j in range(0, len(self.matrix[i])):
                 logFile.write(str(i) + '; ' + str(j) + '; ' + str(self.matrix[i][j]) + '\n')
         logFile.close()
-        
 
 
-# -----------------------------------------------------------------------------------------------------  
+
+# -----------------------------------------------------------------------------------------------------
 # -------------------------------------------- Agent class --------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 
@@ -209,7 +209,7 @@ class Agent:
 
 
 # setters, getters
-    
+
     # get own coordinates
     def getOwnCoord(self):
         return [self.x, self.y]
@@ -218,7 +218,7 @@ class Agent:
     def setOwnCoord(self, x_koord, y_koord):
         self.x = x_koord
         self.y = y_koord
-        
+
     # get opponent's coordinates
     def getOppCoord(self):
         return [self.oppX, self.oppY]
@@ -231,15 +231,15 @@ class Agent:
     # get the position matrix
     def getPosMat(self):
         return self.position_matrix.getMatrix()
-         
+
     # set the position matrix to a matrix
     def setPosMat(self, dec_mat):
         self.position_matrix.setMatrix(dec_mat)
 
-    # get a specified element from the position matrix 
+    # get a specified element from the position matrix
     def getPosMatItem(self, x, y):
-        return self.position_matrix.getMatrixItem(x, y)    
-    
+        return self.position_matrix.getMatrixItem(x, y)
+
     # set the position matrix specified element to a value
     def setPosMatItem(self, x, y, value):
         self.position_matrix.setMatrixItem(x, y, value)
@@ -247,50 +247,50 @@ class Agent:
     # rescale position matrix
     def rescalePosMat(self, line = - 1):
         self.position_matrix.rescale(line)
-    
+
     # get the opponent's matrix
     def getOppMat(self):
         return self.opponent_matrix.getMatrix()
-    
+
     # set the opponent's matrix to a matrix
     def setOppMat(self, dec_mat):
         self.opponent_matrix.setMatrix(dec_mat)
-    
+
     # get a specified element from the opponent's matrix
     def getOppMatItem(self, x, y):
         return self.opponent_matrix.getMatrixItem(x, y)
-        
-    # set the opponent's matrix specified element to a value    
+
+    # set the opponent's matrix specified element to a value
     def setOppMatItem(self, x, y, value):
         self.opponent_matrix.setMatrixItem(x, y, value)
-        
+
     # rescale opponent's matrix
     def rescaleOppMat(self, line = - 1):
         self.opponent_matrix.rescale(line)
-    
+
     # log position matrix to PosMat.csv
     def logPosMat(self, logFileName = "PosMat.csv"):
         self.position_matrix.logMatrix(logFileName)
-    
+
     # log opponent's matrix to OppMat.csv
     def logOppMat(self, logFileName = "OppMat.csv"):
         self.opponent_matrix.logMatrix(logFileName)
-    
+
     # get the number of wins
     def getWins(self):
         return self.wins
-    
+
     # set the number of wins
     def setWins(self, value):
         self.wins = value
-    
+
     # increase the number of wins
     def incWins(self):
         self.wins = self.wins + 1
 
-# end of setters, getters        
-    
-    
+# end of setters, getters
+
+
     # Save strategy to a file
     def saveStrategy(self, filename):
         """ Save probability matrices to a file. """
@@ -314,10 +314,10 @@ class Agent:
             print "Saved to " + filename
         except:
             print "Could not save strategy!"
-        
-      
-      
-    # Load strategy from a file    
+
+
+
+    # Load strategy from a file
     def loadStrategy(self, filename, nolog = 0):
         """ Load probability matrices from a file. """
         try:
@@ -329,20 +329,20 @@ class Agent:
             actlist = temp[current]
             for line in problist:
                 if line[0] == '#':
-                    current += 1  
+                    current += 1
                     actlist = temp[current]
                 else:
                     actlist.append(map(float, line.rstrip().split(', ')))
-                    
+
             self.setPosMat(temp[0])
             self.setOppMat(temp[1])
             if nolog == 0:
                 print "Loaded from " + filename
         except:
             print "Could not open the specified strategy file, playing default strategy!"
-        
-    
-    
+
+
+
     # special thanks to Eli Bendersky for the Weighted random generation benchmarks!
     # http://eli.thegreenplace.net/2010/01/22/weighted-random-generation-in-python/
     def weighted_choice_sub(self, weights):
@@ -351,16 +351,16 @@ class Agent:
             rnd -= w
             if rnd < 0:
                 return i
-        
-        
-    
-    # where should I step? Where would the opponent step?   
+
+
+
+    # where should I step? Where would the opponent step?
     def decide(self, prob = 1.0):
         """ Make a decision based on probabilities. """
-        
+
         # create an empty decision
         dec = []
-        
+
         try:
             # create a list for the possible step's probability
             pos_list = [self.position_matrix.getMatrixItem(self.x + 1, self.y - 1) * 100, self.position_matrix.getMatrixItem(self.x + 1, self.y) * 100,\
@@ -372,7 +372,7 @@ class Agent:
                 if pos_list[i] <= 0.0:
                     del pos_l[i]
                     del pos_list[i]
-           
+
             # create a list for the opponent's step's probability
             opp_list = [self.opponent_matrix.getMatrixItem(self.oppX + 1, self.oppY - 1) * 100, self.opponent_matrix.getMatrixItem(self.oppX + 1, self.oppY) * 100,\
             self.opponent_matrix.getMatrixItem(self.oppX + 1, self.oppY + 1) * 100]
@@ -383,7 +383,7 @@ class Agent:
                 if opp_list[i] <= 0.0:
                     del opp_l[i]
                     del opp_list[i]
-           
+
         except:
             print self.x, self.y, self.oppX, self.oppY
             self.position_matrix.setMatrixItem(self.x, self.y, 'x')
@@ -393,7 +393,7 @@ class Agent:
             for act in self.opponent_matrix.getMatrix():
                 print act
             raise
-    
+
         # if we don't explore the gamespace
         if(random.random() < prob):
             # create the next step based on probabilities
@@ -402,7 +402,7 @@ class Agent:
             # choose randomly
             decision = random.choice(pos_l)
             dec.append(decision)
-    
+
         # if we don't explore the gamespace
         if(random.random() < prob):
             # create the opponent's next step based on probabilities
@@ -411,10 +411,10 @@ class Agent:
             # choose randomly
             decision = random.choice(opp_l)
             dec.append(decision)
-                       
+
         return dec
-  
-  
+
+
     # manually set the decision, if the setup is valid
     def setDecision(self, pos, opp):
         if self.position_matrix.getMatrixItem(pos[0], pos[1]) != 0.0 and self.opponent_matrix.getMatrixItem(opp[0], opp[1]) != 0.0:
@@ -422,8 +422,8 @@ class Agent:
         else:
             print 'Invalid positions!'
             return None
-            
-            
+
+
 # --------------------- Learning method related misc functions -----------------------------------
 
     # greatest common multiply
@@ -431,8 +431,8 @@ class Agent:
         while num2 > 0:
             num1, num2 = num2, num1 % num2
         return num1
-    
-    # least common divisor    
+
+    # least common divisor
     def lcm(self, num1, num2):
         result = num1 * num2 / self.gcd(num1, num2)
         return result
@@ -441,24 +441,24 @@ class Agent:
 # --------------------------------- Learning methods ----------------------------------------------
 
 
-          
-            
-    # learn from the actual step        
+
+
+    # learn from the actual step
     def learn(self, iCanStep, oppCanStep, myMove, oppMove, learningConstant, typeOfLearning):
-        """ Learning from the actual step. 
-        
+        """ Learning from the actual step.
+
         Modifies the corresponding probabilities based on different learning algorithms. To maintain the
         probabilistic nature of the game's matrix, rescale the modified row.
-        
+
         """
 
-        # - 0 -        
+        # - 0 -
         # Learning method NULL
         # Do not learn anything!
         if typeOfLearning == 0:
             pass
-        
-        
+
+
         # - 1 -
         # Learning method v1
         # lame learning: modify the probability matrix by increasing / decreasing the
@@ -468,31 +468,31 @@ class Agent:
                 # inc p1 dest, dec p1 pred
                 temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) * 1.1
                 self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                
+
                 temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) * 0.9
                 self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-            
+
             elif iCanStep == 1 and oppCanStep == 0:
                 # inc p1 dest, inc p1 pred
                 temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) * 1.1
                 self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                
+
                 temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) * 1.1
                 self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-            
+
             elif iCanStep == 0 and oppCanStep == 1:
                 # dec p1 dest, dec p1 pred
                 temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) * 0.9
                 self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                
+
                 temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) * 0.9
                 self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-            
+
             elif iCanStep == 0 and oppCanStep == 0:
                 # dec p1 dest, inc p1 pred
                 temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) * 0.9
                 self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                
+
                 temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) * 1.1
                 self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
 
@@ -501,12 +501,12 @@ class Agent:
                 actline = myMove[0][0]
                 self.rescalePosMat(actline)
                 actline = myMove[1][0]
-                self.rescaleOppMat(actline)    
+                self.rescaleOppMat(actline)
             except:
                 print myMove[0][0], myMove[1][0]
-                raise    
-        
-        
+                raise
+
+
         # Learning method v2
         # neural learning: modify the probability matrix according to the backpropagation
         # learning rule -> w(k) = w(k-1) + alpha * error * SUM(x_i)
@@ -524,13 +524,13 @@ class Agent:
                                  self.getPosMatItem(myMove[0][0] - 1, myMove[0][1]) + \
                                  self.getPosMatItem(myMove[0][0] - 1, myMove[0][1] + 1))
                     self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                    
+
                     temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) + learningConstant * (-1) * \
                                 (self.getOppMatItem(myMove[1][0] - 1, myMove[1][1] - 1) + \
                                  self.getOppMatItem(myMove[1][0] - 1, myMove[1][1]) + \
                                  self.getOppMatItem(myMove[1][0] - 1, myMove[1][1] + 1))
                     self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-                
+
                 elif iCanStep == 1 and oppCanStep == 0:
                     # p1 dest inc, p1 pred inc
                     temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) + learningConstant * (1) * \
@@ -538,13 +538,13 @@ class Agent:
                                  self.getPosMatItem(myMove[0][0] - 1, myMove[0][1]) + \
                                  self.getPosMatItem(myMove[0][0] - 1, myMove[0][1] + 1))
                     self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                
+
                     temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) + learningConstant * (1) * \
                                 (self.getOppMatItem(myMove[1][0] - 1, myMove[1][1] - 1) + \
                                  self.getOppMatItem(myMove[1][0] - 1, myMove[1][1]) + \
                                  self.getOppMatItem(myMove[1][0] - 1, myMove[1][1] + 1))
                     self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-                
+
                 elif iCanStep == 0 and oppCanStep == 1:
                     # dec p1 dest, dec p1 pred
                     temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) + learningConstant * (-1) * \
@@ -558,9 +558,9 @@ class Agent:
                                  self.getOppMatItem(myMove[1][0] - 1, myMove[1][1]) + \
                                  self.getOppMatItem(myMove[1][0] - 1, myMove[1][1] + 1))
                     self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-                    
+
                 elif iCanStep == 0 and oppCanStep == 0:
-                    # dec p1 dest, p1 pred inc 
+                    # dec p1 dest, p1 pred inc
                     temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) + learningConstant * (-1) * \
                                 (self.getPosMatItem(myMove[0][0] - 1, myMove[0][1] - 1) + \
                                  self.getPosMatItem(myMove[0][0] - 1, myMove[0][1]) + \
@@ -578,16 +578,16 @@ class Agent:
                     actline = myMove[0][0]
                     self.rescalePosMat(actline)
                     actline = myMove[1][0]
-                    self.rescaleOppMat(actline)    
+                    self.rescaleOppMat(actline)
                 except:
                     print myMove[0][0], myMove[1][0]
-                    raise    
+                    raise
 
             except:
                 print myMove
                 raise
-        
-        
+
+
         # - 3 -
         # Learning method v3
         # neural learning v2: modify the probability matrix according to the backpropagation
@@ -596,7 +596,7 @@ class Agent:
         # x_previous = predecessor's probability
         # error = -1 if wrong, 0 in other case
         # alpha = learningConstant
-        # temp = alpha * error * x_previous        
+        # temp = alpha * error * x_previous
         elif typeOfLearning == 3:
             try:
                 if iCanStep == 1 and oppCanStep == 1:
@@ -604,21 +604,21 @@ class Agent:
                     temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) + learningConstant * (1) * \
                                 self.getPosMatItem(self.getOwnCoord()[0],self.getOwnCoord()[1])
                     self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                    
+
                     temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) + learningConstant * (-1) * \
                                 self.getOppMatItem(self.getOppCoord()[0],self.getOppCoord()[1])
                     self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-                
+
                 elif iCanStep == 1 and oppCanStep == 0:
                     # p1 dest inc, p1 pred inc
                     temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) + learningConstant * (1) * \
                                 self.getPosMatItem(self.getOwnCoord()[0],self.getOwnCoord()[1])
                     self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                    
+
                     temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) + learningConstant * (1) * \
                                 self.getOppMatItem(self.getOppCoord()[0],self.getOppCoord()[1])
                     self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-                
+
                 elif iCanStep == 0 and oppCanStep == 1:
                     # dec p1 dest, dec p1 pred
                     temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) + learningConstant * (-1) * \
@@ -628,34 +628,34 @@ class Agent:
                     temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) + learningConstant * (-1) * \
                                 self.getOppMatItem(self.getOppCoord()[0],self.getOppCoord()[1])
                     self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-                    
+
                 elif iCanStep == 0 and oppCanStep == 0:
-                    # dec p1 dest, p1 pred inc 
+                    # dec p1 dest, p1 pred inc
                     temp = self.getPosMatItem(myMove[0][0], myMove[0][1]) + learningConstant * (-1) * \
                                 self.getPosMatItem(self.getOwnCoord()[0],self.getOwnCoord()[1])
                     self.setPosMatItem(myMove[0][0], myMove[0][1], temp)
-                    
+
                     temp = self.getOppMatItem(myMove[1][0], myMove[1][1]) + learningConstant * (1) * \
                                 self.getOppMatItem(self.getOppCoord()[0],self.getOppCoord()[1])
                     self.setOppMatItem(myMove[1][0], myMove[1][1], temp)
-                
-                
-                # rescaling to get probabilities instead of weights    
+
+
+                # rescaling to get probabilities instead of weights
                 try:
                     actline = myMove[0][0]
                     self.rescalePosMat(actline)
                     actline = myMove[1][0]
-                    self.rescaleOppMat(actline)    
+                    self.rescaleOppMat(actline)
                 except:
                     print myMove[0][0], myMove[1][0]
-                    raise    
-                        
+                    raise
+
             except:
                 print myMove
                 raise
-                
-        
-        # - 4 -        
+
+
+        # - 4 -
         # Learning method v4
         # ADABoost weighting - Use a weight modification similar to ADABoost weight modification
         # To work appropriately, we have to invert the rule: If the step went well, inrease probability
@@ -702,7 +702,7 @@ class Agent:
                     # rescale
                     actline = myMove[1][0]
                     self.rescaleOppMat(actline)
-                    
+
                 elif iCanStep == 1 and oppCanStep == 0:
                     # p1 dest does not change, p1 pred does not change
                     pass
@@ -712,7 +712,7 @@ class Agent:
                     weights = [self.getPosMatItem(self.getOwnCoord()[0] + 1, self.getOwnCoord()[1] - 1), \
                                self.getPosMatItem(self.getOwnCoord()[0] + 1, self.getOwnCoord()[1]), \
                                self.getPosMatItem(self.getOwnCoord()[0] + 1, self.getOwnCoord()[1] + 1)]
-                    epsilon = sum(weights)  
+                    epsilon = sum(weights)
                     if epsilon < 0.5:
                         epsilon = 0.6
                     elif epsilon >= 1.0:
@@ -732,9 +732,9 @@ class Agent:
                     self.rescalePosMat(actline)
                     actline = myMove[1][0]
                     self.rescaleOppMat(actline)
-                    
+
                 elif iCanStep == 0 and oppCanStep == 0:
-                    # dec p1 dest, p1 pred does not change  
+                    # dec p1 dest, p1 pred does not change
                     weights = [self.getPosMatItem(self.getOwnCoord()[0] + 1, self.getOwnCoord()[1] - 1), \
                                self.getPosMatItem(self.getOwnCoord()[0] + 1, self.getOwnCoord()[1]), \
                                self.getPosMatItem(self.getOwnCoord()[0] + 1, self.getOwnCoord()[1] + 1)]
@@ -748,18 +748,18 @@ class Agent:
                     # rescale
                     actline = myMove[0][0]
                     self.rescalePosMat(actline)
-                        
+
             except:
                 print myMove
                 raise
-                
-        
+
+
         # - 5 -
         # Learning method v5
-        # Naive Bayes method based method - Estimate the probabilities based on the observations. In the beginning we assume that 
-        # each line is a random variable which have 5 different value, and the probability of these values follows the universal 
+        # Naive Bayes method based method - Estimate the probabilities based on the observations. In the beginning we assume that
+        # each line is a random variable which have 5 different value, and the probability of these values follows the universal
         # distribution. During the steps we observe the outcome of our decisions, and modify our assumption.
-        # 
+        #
         # Naive Bayes terminology:
         #   P = N_i / N
         #   N_i - number of occurence of the i^th value
@@ -769,7 +769,7 @@ class Agent:
         # Initial state:
         #   All of the N_i = 1
         #   Compute the probabilities for all of the values.
-        # 
+        #
         # After each step:
         #   Compute the N_i, N values for the actual lines from the probabilities:
         #       From every decimal, get the fractal values
@@ -789,7 +789,7 @@ class Agent:
         # def learn(self, iCanStep, oppCanStep, myMove, oppMove, learningConstant, typeOfLearning)
         elif typeOfLearning == 5:
             try:
-            
+
             # create lists
                 # create a list for the possible steps
                 steps = []
@@ -805,7 +805,7 @@ class Agent:
                 if not self.getPosMatItem(myMove[0][0], myMove[0][1] + 1) == 0.0:
                     steps.append(self.getPosMatItem(myMove[0][0], myMove[0][1] + 1))
                     steps_index.append(+1)
-                    
+
                 # create a list for the possible preds
                 preds = []
                 preds_index = []
@@ -820,19 +820,19 @@ class Agent:
                 if not self.getOppMatItem(myMove[1][0], myMove[1][1] + 1) == 0.0:
                     preds.append(self.getOppMatItem(myMove[1][0], myMove[1][1] + 1))
                     preds_index.append(+1)
-                    
+
             # get the fractal values
                 # create two temporary list for steps and for pred
                 temp_step = []
-                temp_pred = []                
-                
+                temp_pred = []
+
                 # get the fractions, and put them into the temp. lists
                 for elem in steps:
                     temp_step.append(Fraction(elem))
-                    
+
                 for elem in preds:
                     temp_pred.append(Fraction(elem))
-                    
+
                 # get least common multiples
                 lcm_step = temp_step[0].denominator
                 if len(temp_step) == 3:
@@ -851,32 +851,32 @@ class Agent:
                     # inc p1 step, dec p1 pred
                     temp_step[0] = Fraction(int(temp_step[0].numerator * 1.1), temp_step[0].denominator)
                     temp_pred[0] = Fraction(temp_pred[0].numerator, int(temp_pred[0].denominator * 1.1))
-    
+
                 elif iCanStep == 1 and oppCanStep == 0:
                     # inc p1 step, inc p1 pred
                     temp_step[0] = Fraction(int(temp_step[0].numerator * 1.1), temp_step[0].denominator)
                     temp_pred[0] = Fraction(int(temp_pred[0].numerator * 1.1), temp_pred[0].denominator)
-                    
+
                 elif iCanStep == 0 and oppCanStep == 1:
                     # dec p1 step, dec p1 pred
                     temp_step[0] = Fraction(temp_step[0].numerator, int(temp_step[0].denominator * 1.1))
                     temp_pred[0] = Fraction(temp_pred[0].numerator, int(temp_pred[0].denominator * 1.1))
-                 
+
                 elif iCanStep == 0 and oppCanStep == 0:
                     # dec p1 step, inc p1 pred
                     temp_step[0] = Fraction(temp_step[0].numerator, int(temp_step[0].denominator * 1.1))
-                    temp_pred[0] = Fraction(int(temp_pred[0].numerator * 1.1), temp_pred[0].denominator)                    
-                
+                    temp_pred[0] = Fraction(int(temp_pred[0].numerator * 1.1), temp_pred[0].denominator)
+
 
             # convert fractions back
                 steps = []
                 for elem in temp_step:
-                    steps.append((float(elem.numerator) * float(lcm_step)/float(elem.denominator))/float(lcm_step))   
+                    steps.append((float(elem.numerator) * float(lcm_step)/float(elem.denominator))/float(lcm_step))
 
                 preds = []
                 for elem in temp_pred:
-                    preds.append((float(elem.numerator) * float(lcm_pred)/float(elem.denominator))/float(lcm_pred)) 
-                
+                    preds.append((float(elem.numerator) * float(lcm_pred)/float(elem.denominator))/float(lcm_pred))
+
 
                 # setposmatitems
                 for id, elem in enumerate(steps):
@@ -884,47 +884,47 @@ class Agent:
                 # setoppmatitems
                 for id, elem in enumerate(preds):
                     self.setOppMatItem(myMove[1][0], myMove[1][1] + preds_index[id], elem)
-                
+
                 # rescale
                 actline = myMove[0][0]
                 self.rescalePosMat(actline)
                 actline = myMove[1][0]
                 self.rescaleOppMat(actline)
-                   
+
             except:
                 print myMove
                 raise
-                
-        
+
+
         # - 6 -
-        # Learning method v6        
-        # Gradient Descent method     
-        # based on KLDiv: KLDiv(P, Q) = p_i * ln(p_i / q_i)   
+        # Learning method v6
+        # Gradient Descent method
+        # based on KLDiv: KLDiv(P, Q) = p_i * ln(p_i / q_i)
         # from here we get: F(x) = x * ln(x / y)
         # so the learning rule is:
         #   w(k+1) = w(k) - gamma * (ln(w(k) / y) + 1)
         elif typeOfLearning == 6:
             try:
-                raise NotImplementedError('Learning method not yet implemented!') 
+                raise NotImplementedError('Learning method not yet implemented!')
             except:
                 print myMove
                 raise
-            
+
         else:
             print 'There\'s no such learning method!\nRead the documentation for details!'
             raise
-  
 
-  
-# -----------------------------------------------------------------------------------------------------  
+
+
+# -----------------------------------------------------------------------------------------------------
 # -------------------------------------------- Board class --------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 
 
 class Board:
     """GameBoard - Plays the game."""
-    
-    
+
+
     # init the game
     def __init__(self, size_x = 5, size_y = 8, beta = 0.5, human = 0):
         self.beta = beta
@@ -935,29 +935,29 @@ class Board:
         self.player1 = Agent(0, self.sizeX / 2 + 1, 0, self.sizeX / 2 + 1, ProbMat(self.sizeX, self.sizeY), ProbMat(self.sizeX, self.sizeY))
         self.player2 = Agent(0, self.sizeX / 2 + 1, 0, self.sizeX / 2 + 1, ProbMat(self.sizeX, self.sizeY), ProbMat(self.sizeX, self.sizeY))
         self.human = human
-    
+
 
 # --------------------------------- Information methods ----------------------------------------------
-   
-    
-    # show some info about the current round 
+
+
+    # show some info about the current round
     def showRound(self):
         """ Print out informations about the current round. """
-        
+
         print self.round, ". round:\nplayer 1:\nx: ", self.player1.getOwnCoord()[0], "\ny: ", self.player1.getOwnCoord()[1], "\n\nplayer 2:\nx: ", \
               self.player2.getOwnCoord()[0], "\ny: ", self.player2.getOwnCoord()[1]
-    
-    
+
+
     # returns the players' matrices
     def getMatrices(self):
         return [self.player1.getPosMat(), self.player1.getOppMat(), self.player2.getPosMat(), self.player2.getOppMat()]
-    
-    
-               
-    # show some info about the game    
+
+
+
+    # show some info about the game
     def showAll(self):
         """ Show all relevant info about the game(s). """
-        
+
         # size of the board
         print self.sizeX, "x", self.sizeY
         # the current round's number
@@ -973,8 +973,8 @@ class Board:
         # the number of wins
         print "p1 Wins: ", self.player1.getWins()
         print "p2 Wins: ", self.player2.getWins()
-    
-    
+
+
     # Returns all important info in one string
     def getResults(self):
         result_list = []
@@ -987,70 +987,70 @@ class Board:
         result_list.append('\nAI wins: ' + str(self.player1.getWins()) + '\nOpp wins: ' + str(self.player2.getWins()))
         return ''.join(result_list)
 
-            
-  
-# --------------------------------- GamePlay methods ----------------------------------------------    
-    
-    
+
+
+# --------------------------------- GamePlay methods ----------------------------------------------
+
+
     # Returns if it is game over
     def isGameOver(self):
         """ Is it game over already? """
-        
+
         if self.gameOver == 1:
             return 1
         else:
             return 0
-         
-         
 
-    # Ask for the next step. User should input the next step's coordinates and the prediction's coordinates           
+
+
+    # Ask for the next step. User should input the next step's coordinates and the prediction's coordinates
     # !!! For heritage purpose !!!
     def askForInput(self, options):
         """ Ask the user for input. """
         # implement your own input method!
         pass
-              
-              
-              
+
+
+
     def avalaibleSteps(self, player):
         """ Returns the avalaible steps and predictions. """
         posX = player.getOwnCoord()[0]
         posY = player.getOwnCoord()[1]
-        
+
         oppX = player.getOppCoord()[0]
         oppY = player.getOppCoord()[1]
-        
+
         pos_list = []
         opp_list = []
 
         for y in [posY - 1, posY, posY + 1]:
             if y < (self.sizeX + 1) and y > 0:
                 pos_list.append([posX + 1, y])
-          
+
         for y in [oppY - 1, oppY, oppY + 1]:
             if y < self.sizeX + 1 and y > 0:
                 opp_list.append([oppX + 1, y])
 
-        return [pos_list, opp_list]        
-        
-              
-                
-    # do one step in the game        
+        return [pos_list, opp_list]
+
+
+
+    # do one step in the game
     def doOneStep(self, learningType = 0, options = None):
         """
         Play one step.
-        
+
         The method play one step of the game. Check if it's game over, then ask the players to decide their
         next step, then moves the players according their decisions. The player1 is learning from it's mis-
         takes. The type of learning can be modified.
-        
+
         """
-    
+
         if self.gameOver == 1:
             print "Already Game Over!"
             return
-        
-        # let the players decide on their own...    
+
+        # let the players decide on their own...
         player1move = self.player1.decide(AIPROBOFEXPLORE)
         # if there's a human player, ask for the next step...
         if self.human == 1:
@@ -1060,13 +1060,13 @@ class Board:
         elif self.human == 0:
             player2move = self.player2.decide(SOPROBOFEXPLORE)
         playersmove = [1, 1]
-        
+
         # let's see the results
         if player2move[1] == player1move[0]:
-            playersmove[0] = 0 
+            playersmove[0] = 0
         if player1move[1] == player2move[0]:
-            playersmove[1] = 0     
-        
+            playersmove[1] = 0
+
         # both player steps
         if playersmove == [1, 1]:
             self.player1.learn(1, 1, player1move, player2move, LEARNINGCONSTANT, learningType)
@@ -1074,34 +1074,34 @@ class Board:
             self.player1.setOppCoord(player2move[0][0], player2move[0][1])
             self.player2.setOwnCoord(player2move[0][0], player2move[0][1])
             self.player2.setOppCoord(player1move[0][0], player1move[0][1])
-            
+
         # only the first player steps
         elif playersmove == [1, 0]:
             self.player1.learn(1, 0, player1move, player2move, LEARNINGCONSTANT, learningType)
             self.player1.setOwnCoord(player1move[0][0], player1move[0][1])
             self.player2.setOppCoord(player1move[0][0], player1move[0][1])
-            
+
         # only the second player steps
         elif playersmove == [0, 1]:
             self.player1.learn(0, 1, player1move, player2move, LEARNINGCONSTANT, learningType)
             self.player1.setOppCoord(player2move[0][0], player2move[0][1])
             self.player2.setOwnCoord(player2move[0][0], player2move[0][1])
-        
-        # nobody steps    
+
+        # nobody steps
         elif playersmove == [0, 0]:
             self.player1.learn(0, 0, player1move, player2move, LEARNINGCONSTANT, learningType)
 
 
         # next round!
         self.round = self.round + 1
-       
-       
+
+
         # Game Over?
         # player 1 wins!
         if self.player1.getOwnCoord()[0] == self.sizeY - 1 and not self.player2.getOwnCoord()[0] == self.sizeY - 1:
             self.player1.incWins()
             self.gameOver = 1
-            
+
         # player 2 wins!
         elif not self.player1.getOwnCoord()[0] == self.sizeY - 1 and self.player2.getOwnCoord()[0] == self.sizeY - 1:
             self.player2.incWins()
@@ -1116,11 +1116,11 @@ class Board:
     # reset game state
     def reset(self):
         """ Reset the game. """
-        
+
         # set gameOver to 0
         self.round = 0
         self.gameOver = 0
-        
+
         # set players to init positions
         self.player1.setOwnCoord(0, self.sizeX / 2 + 1)
         self.player1.setOppCoord(0, self.sizeX / 2 + 1)
@@ -1135,7 +1135,7 @@ class Board:
 class Error:
     """ Stores and calculates error between two MensIco player. """
 
-    # init 
+    # init
     def __init__(self, P_Pos = None, P_Opp = None, Q_Pos = None, Q_Opp = None, typeOfError = 0):
         self.P_Pos = P_Pos
         self.P_Opp = P_Opp
@@ -1148,13 +1148,13 @@ class Error:
 
     def getError(self):
         return self.value
-        
+
     def resetError(self):
         self.value = None
 
     def getTypeOfError(self):
         return self.typeOfError
-        
+
     def setTypeOfError(self, value):
         if value >= 0 and value <= 2 and type(value) == type(1):
             self.typeOfError = value
@@ -1164,14 +1164,14 @@ class Error:
     # measure the difference between the optimal and actual probabilities
     def getRMSE(self):
         """ Calculate RMSE between the optimal and actual probabilities. """
-        
+
         rmse = 0.0
-        
+
         # difference of the prediction's probability and the opponent's step's probability
         for p1, p2 in itertools.izip(self.P_Opp, self.Q_Pos):
             for elem1, elem2 in itertools.izip(p1, p2):
                 rmse += math.sqrt((elem2 - elem1)**2)
-        
+
         # help variable
         act = 0
         # difference of the step's probability and the opponent's prediction's probability
@@ -1185,19 +1185,19 @@ class Error:
                 for i in range(0, len(temp)):
                     if not temp[i] == 0.0:
                         temp[i] = 1.0 / temp[i]
-                
-                # rescale it back to sum = 1.0                
+
+                # rescale it back to sum = 1.0
                 temp_summa = sum(temp)
                 for i in range(0, len(temp)):
                     temp[i] = temp[i] / temp_summa
-                
+
                 # get the differences
                 for elem1, elem2 in itertools.izip(p1, temp):
                     rmse += math.sqrt((elem2 - elem1)**2)
-                    
-            # we're not in the first row anymore!    
+
+            # we're not in the first row anymore!
             act += 1
-            
+
         return rmse / 2.0
 
 
@@ -1208,15 +1208,15 @@ class Error:
     #
     def getKLDiv(self):
         """ Calculate the Kullback-Leibler divergence between the optimal and actual probabilities. """
-        
+
         kldiv = 0.0
-        
+
         # difference of the prediction's probability and the opponent's step's probability
         for p1, p2 in itertools.izip(self.P_Opp, self.Q_Pos):
             for elem1, elem2 in itertools.izip(p1, p2):
                 if not elem2 == 0.0 and not elem1 == 0.0:
                     kldiv += elem1 * math.log(elem1 / elem2)
-        
+
         # help variable
         act = 0
         # difference of the step's probability and the opponent's prediction's probability
@@ -1230,40 +1230,40 @@ class Error:
                 for i in range(0, len(temp)):
                     if not temp[i] == 0.0:
                         temp[i] = 1.0 / temp[i]
-                
-                # rescale it back to sum = 1.0                
+
+                # rescale it back to sum = 1.0
                 temp_summa = sum(temp)
                 for i in range(0, len(temp)):
                     temp[i] = temp[i] / temp_summa
-                
+
                 # get the differences
                 for elem1, elem2 in itertools.izip(p1, temp):
                     if not elem2 == 0.0 and not elem1 == 0.0:
                         kldiv += elem1 * math.log(elem1 / elem2)
 
-                    
-            # we're not in the first row anymore!    
+
+            # we're not in the first row anymore!
             act += 1
-            
-        return kldiv / 2.0        
-        
-        
-        
+
+        return kldiv / 2.0
+
+
+
     # measure the Kullback-Leibler divergence between the optimal and actual probabilities
     #
     # Chi-Square divergence: div(p, q) = sum_i^N (p_i - q_i)^2 / q_i
     #
     def getChiSquareDiv(self):
         """ Calculate the Chi square divergence between the optimal and actual probabilities. """
-        
+
         chiSquareDiv = 0.0
-        
+
         # difference of the prediction's probability and the opponent's step's probability
         for p1, p2 in itertools.izip(self.P_Opp, self.Q_Pos):
             for elem1, elem2 in itertools.izip(p1, p2):
                 if not elem2 == 0.0:
                     chiSquareDiv += ((elem1 - elem2)**2) / elem2
-        
+
         # help variable
         act = 0
         # difference of the step's probability and the opponent's prediction's probability
@@ -1277,32 +1277,32 @@ class Error:
                 for i in range(0, len(temp)):
                     if not temp[i] == 0.0:
                         temp[i] = 1.0 / temp[i]
-                
-                # rescale it back to sum = 1.0                
+
+                # rescale it back to sum = 1.0
                 temp_summa = sum(temp)
                 for i in range(0, len(temp)):
                     temp[i] = temp[i] / temp_summa
-                
+
                 # get the differences
                 for elem1, elem2 in itertools.izip(p1, temp):
                     if not elem2 == 0.0:
                         chiSquareDiv += ((elem1 - elem2)**2) / elem2
-                    
-            # we're not in the first row anymore!    
+
+            # we're not in the first row anymore!
             act += 1
-            
-        return chiSquareDiv / 2.0    
+
+        return chiSquareDiv / 2.0
 
     # Calculate the greatest difference between the opponent's and the player's matrices.
     #   a) (max_i(P_Opp(i)) - Q_Pos(i)) + (max_i(Q_Pos(i)) - P_Opp(i)) - because we want to minimize the difference
     #   b) 1 / ((max_i(P_Pos(i)) - Q_Opp(i)) + (max_i(Q_Opp(i)) - P_Pos(i))) - because we want to maximize the difference
     def getGreatestDifference(self):
         """ Returns the greatest difference between the two player's matrices. """
-        
-        error = 0.0  
-        
+
+        error = 0.0
+
         # calculate the difference between maximum value of the player's maximum value
-        # and the opponent's value on the same tile and vice versa 
+        # and the opponent's value on the same tile and vice versa
         for P_line, Q_line in itertools.izip(self.P_Opp, self.Q_Pos):
             error += float((max(P_line) - Q_line[P_line.index(max(P_line))]) + (max(Q_line) - P_line[Q_line.index(max(Q_line))]))
 
@@ -1312,14 +1312,14 @@ class Error:
             temp = float((max(P_line) - Q_line[P_line.index(max(P_line))]) + (max(Q_line) - P_line[Q_line.index(max(Q_line))]))
             if not temp == 0:
                 error += temp
-            
+
         return error / 2.0
-        
+
     # calculates the error value
     def calculateError(self):
         """
         Set the error value to the error calculated by the selected type of divergence.
-        
+
         Possible divergences:
         0 - Root Mean Squared Error
         1 - Kullback - Leibler Divergence
