@@ -55,27 +55,32 @@ class MainWindow(Tk):
         # launch button
         (Button(self, text='Launch',
                 command=lambda: self.startProgram(self.mode))
-         .pack(side = TOP, padx=5, pady=5))
+         .pack(side=TOP, padx=5, pady=5))
 
         # what's this button
-        (Button(self, text = "What's this?", command = self.printHelp)
-         .pack(side = TOP, padx=5, pady=5))
+        (Button(self, text="What's this?", command=self.printHelp)
+         .pack(side=TOP, padx=5, pady=5))
 
         # quit button
-        (Button(self, text = 'Quit', command = self.quit)
-         .pack(side = BOTTOM, padx=5, pady=5))
+        (Button(self, text='Quit', command=self.quit)
+         .pack(side=BOTTOM, padx=5, pady=5))
         self.protocol('WM_DELETE_WINDOW', self.quit)
 
     def printHelp(self):
-        """ Print some help. """
+        """ Show help window."""
 
-        description = open('data/resources/description.txt').read()
-        # show the description
+        # window init
         self.help = Toplevel(self)
         self.help.title(engine.VERSION + ' test results')
+
+        # show the description
+        description = open('data/resources/description.txt').read()
         Label(self.help, text=description, justify=LEFT).pack(padx=5, pady=5)
-        (Button(self.help, text = 'Ok', command = self.help.destroy)
+
+        # close button
+        (Button(self.help, text='Ok', command=self.help.destroy)
          .pack(padx=5, pady=5))
+
         self.help.protocol('WM_DELETE_WINDOW', self.help.destroy)
 
     def startProgram(self, mode):
@@ -97,50 +102,98 @@ class GameWindow(Tk):
 
     Create a simple user interface for human players.
     """
+
     def __init__(self, parent):
-        """ Creating the basic overlay. """
+        """Creating the basic overlay. """
 
-        # The window should know its parent
+        # set window parent
         self.parent = parent
-        # init the superclass
         Tk.__init__(self)
+
         # create the game field
-        self.game = BoardInGUI(human = 1)
+        self.game = BoardInGUI(human=1)
 
-# ---------------------------- Init: Widget variables -------------------------------
+        # -------------------- Init: Widget variables -------------------------
 
-
-        # dictionary of the coordinates on the canvas and the corresponding positions in the game
+        # dictionary of the coordinates on the canvas and the
+        # corresponding positions in the game
         # id: [rect_x1, rect_y1, rect_x2, rect_x3]
         # id for coordinates
-        self.positions = {1: [50, 400, 100, 450], 2: [100, 400, 150, 450], 3: [150, 400, 200, 450], 4: [200, 400, 250, 450], 5: [250, 400, 300, 450], \
-                      6: [50, 350, 100, 400], 7: [100, 350, 150, 400], 8: [150, 350, 200, 400], 9: [200, 350, 250, 400], 10: [250, 350, 300, 400], \
-                      11: [50, 300, 100, 350], 12: [100, 300, 150, 350], 13: [150, 300, 200, 350], 14: [200, 300, 250, 350], 15: [250, 300, 300, 350], \
-                      16: [50, 250, 100, 300], 17: [100, 250, 150, 300], 18: [150, 250, 200, 300], 19: [200, 250, 250, 300], 20: [250, 250, 300, 300], \
-                      21: [50, 200, 100, 250], 22: [100, 200, 150, 250], 23: [150, 200, 200, 250], 24: [200, 200, 250, 250], 25: [250, 200, 300, 250], \
-                      26: [50, 150, 100, 200], 27: [100, 150, 150, 200], 28: [150, 150, 200, 200], 29: [200, 150, 250, 200], 30: [250, 150, 300, 200], \
-                      31: [50, 100, 100, 150], 32: [100, 100, 150, 150], 33: [150, 100, 200, 150], 34: [200, 100, 250, 150], 35: [250, 100, 300, 150], \
-                      36: [50, 50, 100, 100], 37: [100, 50, 150, 100], 38: [150, 50, 200, 100], 39: [200, 50, 250, 100], 40: [250, 50, 300, 100]}
+        self.positions = {
+            1: [50, 400, 100, 450],
+            2: [100, 400, 150, 450],
+            3: [150, 400, 200, 450],
+            4: [200, 400, 250, 450],
+            5: [250, 400, 300, 450],
+
+            6: [50, 350, 100, 400],
+            7: [100, 350, 150, 400],
+            8: [150, 350, 200, 400],
+            9: [200, 350, 250, 400],
+            10: [250, 350, 300, 400],
+
+            11: [50, 300, 100, 350],
+            12: [100, 300, 150, 350],
+            13: [150, 300, 200, 350],
+            14: [200, 300, 250, 350],
+            15: [250, 300, 300, 350],
+
+            16: [50, 250, 100, 300],
+            17: [100, 250, 150, 300],
+            18: [150, 250, 200, 300],
+            19: [200, 250, 250, 300],
+            20: [250, 250, 300, 300],
+
+            21: [50, 200, 100, 250],
+            22: [100, 200, 150, 250],
+            23: [150, 200, 200, 250],
+            24: [200, 200, 250, 250],
+            25: [250, 200, 300, 250],
+
+            26: [50, 150, 100, 200],
+            27: [100, 150, 150, 200],
+            28: [150, 150, 200, 200],
+            29: [200, 150, 250, 200],
+            30: [250, 150, 300, 200],
+
+            31: [50, 100, 100, 150],
+            32: [100, 100, 150, 150],
+            33: [150, 100, 200, 150],
+            34: [200, 100, 250, 150],
+            35: [250, 100, 300, 150],
+
+            36: [50, 50, 100, 100],
+            37: [100, 50, 150, 100],
+            38: [150, 50, 200, 100],
+            39: [200, 50, 250, 100],
+            40: [250, 50, 300, 100]
+        }
+
         # own coordinates
         # id: [x, y]
-        self.own_pos = {1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5], \
-                      6: [1, 1], 7: [1, 2], 8: [1, 3], 9: [1, 4], 10: [1, 5], \
-                      11: [2, 1], 12: [2, 2], 13: [2, 3], 14: [2, 4], 15: [2, 5], \
-                      16: [3, 1], 17: [3, 2], 18: [3, 3], 19: [3, 4], 20: [3, 5], \
-                      21: [4, 1], 22: [4, 2], 23: [4, 3], 24: [4, 4], 25: [4, 5], \
-                      26: [5, 1], 27: [5, 2], 28: [5, 3], 29: [5, 4], 30: [5, 5], \
-                      31: [6, 1], 32: [6, 2], 33: [6, 3], 34: [6, 4], 35: [6, 5], \
-                      36: [7, 1], 37: [7, 2], 38: [7, 3], 39: [7, 4], 40: [7, 5] }
+        self.own_pos = {
+            1: [0, 1], 2: [0, 2], 3: [0, 3], 4: [0, 4], 5: [0, 5],
+            6: [1, 1], 7: [1, 2], 8: [1, 3], 9: [1, 4], 10: [1, 5],
+            11: [2, 1], 12: [2, 2], 13: [2, 3], 14: [2, 4], 15: [2, 5],
+            16: [3, 1], 17: [3, 2], 18: [3, 3], 19: [3, 4], 20: [3, 5],
+            21: [4, 1], 22: [4, 2], 23: [4, 3], 24: [4, 4], 25: [4, 5],
+            26: [5, 1], 27: [5, 2], 28: [5, 3], 29: [5, 4], 30: [5, 5],
+            31: [6, 1], 32: [6, 2], 33: [6, 3], 34: [6, 4], 35: [6, 5],
+            36: [7, 1], 37: [7, 2], 38: [7, 3], 39: [7, 4], 40: [7, 5]
+        }
+
         # opponents coordinates
         # id: [x, y]
-        self.opp_pos = {1: [7, 5], 2: [7, 4], 3: [7, 3], 4: [7, 2], 5: [7, 1], \
-                      6: [6, 5], 7: [6, 4], 8: [6, 3], 9: [6, 2], 10: [6, 1], \
-                      11: [5, 5], 12: [5, 4], 13: [5, 3], 14: [5, 2], 15: [5, 1], \
-                      16: [4, 5], 17: [4, 4], 18: [4, 3], 19: [4, 2], 20: [4, 1], \
-                      21: [3, 5], 22: [3, 4], 23: [3, 3], 24: [3, 2], 25: [3, 1], \
-                      26: [2, 5], 27: [2, 4], 28: [2, 3], 29: [2, 2], 30: [2, 1], \
-                      31: [1, 5], 32: [1, 4], 33: [1, 3], 34: [1, 2], 35: [1, 1], \
-                      36: [0, 5], 37: [0, 4], 38: [0, 3], 39: [0, 2], 40: [0, 1]}
+        self.opp_pos = {
+            1: [7, 5], 2: [7, 4], 3: [7, 3], 4: [7, 2], 5: [7, 1],
+            6: [6, 5], 7: [6, 4], 8: [6, 3], 9: [6, 2], 10: [6, 1],
+            11: [5, 5], 12: [5, 4], 13: [5, 3], 14: [5, 2], 15: [5, 1],
+            16: [4, 5], 17: [4, 4], 18: [4, 3], 19: [4, 2], 20: [4, 1],
+            21: [3, 5], 22: [3, 4], 23: [3, 3], 24: [3, 2], 25: [3, 1],
+            26: [2, 5], 27: [2, 4], 28: [2, 3], 29: [2, 2], 30: [2, 1],
+            31: [1, 5], 32: [1, 4], 33: [1, 3], 34: [1, 2], 35: [1, 1],
+            36: [0, 5], 37: [0, 4], 38: [0, 3], 39: [0, 2], 40: [0, 1]
+        }
 
         # position ids
         self.ownPosition = 3
@@ -148,26 +201,43 @@ class GameWindow(Tk):
         self.ownDec = IntVar()
         self.oppDec = IntVar()
 
-
-# --------------------------- Init: Window drawing ---------------------------------
+        # ---------------------- Init: Window drawing -------------------------
 
         # name the window
         self.title(engine.VERSION)
+
         # Create canvas
-        self.can = Canvas(self, width = 350, height = 500, bg = 'dark green')
+        self.can = Canvas(self, width=350, height=500, bg='dark green')
+
         # draw gamefield
-        self.can.create_rectangle(50, 50, 300, 450, width = 3, fill = 'grey')
-        self.lines = [[50, 100, 300, 100], [50, 150, 300, 150], [50, 200, 300, 200], [50, 250, 300, 250], [50, 300, 300, 300], [50, 350, 300, 350], [50, 400, 300, 400],\
-                 [100, 50, 100, 450], [150, 50, 150, 450], [200, 50, 200, 450], [250, 50, 250, 450], [300, 50, 300, 450]]
+        self.can.create_rectangle(50, 50, 300, 450, width=3, fill='grey')
+        self.lines = [
+            [50, 100, 300, 100],
+            [50, 150, 300, 150],
+            [50, 200, 300, 200],
+            [50, 250, 300, 250],
+            [50, 300, 300, 300],
+            [50, 350, 300, 350],
+            [50, 400, 300, 400],
+            [100, 50, 100, 450],
+            [150, 50, 150, 450],
+            [200, 50, 200, 450],
+            [250, 50, 250, 450],
+            [300, 50, 300, 450]
+        ]
         for line in self.lines:
-            self.can.create_line(line, width = 3)
-        self.can.pack(side = LEFT, padx = 5, pady = 5)
+            self.can.create_line(line, width=3)
+        self.can.pack(side=LEFT, padx=5, pady=5)
 
         # draw scoreboard
-        self.can.create_text(300, 10, text = 'H', fill = 'red', font = 'Arial 14 bold')
-        self.can.create_text(320, 10, text = 'AI', fill = 'red', font = 'Arial 14 bold')
-        self.can.create_text(300, 30, text = str(self.game.player2.getWins()), fill = 'red', font = 'Arial 14 bold', tags = 'wins')
-        self.can.create_text(320, 30, text = str(self.game.player1.getWins()), fill = 'red', font = 'Arial 14 bold', tags = 'wins')
+        self.can.create_text(300, 10, text='H',
+                             fill='red', font='Arial 14 bold')
+        self.can.create_text(320, 10, text='AI',
+                             fill='red', font='Arial 14 bold')
+        self.can.create_text(300, 30, text=str(self.game.player2.getWins()),
+                             fill='red', font='Arial 14 bold', tags='wins')
+        self.can.create_text(320, 30, text=str(self.game.player1.getWins()),
+                             fill='red', font='Arial 14 bold', tags='wins')
 
         # draw players
         self.putTri(self.ownPosition, self.oppPosition)
@@ -176,96 +246,116 @@ class GameWindow(Tk):
 
         # create buttons
         # step button
-        self.stepButton = Button(self, text = 'Step', command = self.doStep)
-        self.stepButton.pack(side = TOP, padx = 5, pady = 5)
+        self.stepButton = Button(self, text='Step', command=self.doStep)
+        self.stepButton.pack(side=TOP, padx=5, pady=5)
 
         # "Learner" sign to separate from the step button
-        Label(self, text = '\n\nLearner').pack(side = TOP, padx = 5, pady = 5)
+        Label(self, text='\n\nLearner').pack(side=TOP, padx=5, pady=5)
 
         # load strategy button
-        self.loadButton = Button(self, text = 'Load', command = lambda: self.game.player1.loadStrategy(askopenfilename(filetypes = [('MensIco Strategy Files','*.mstr')])))
-        self.loadButton.pack(side = TOP, padx = 5, pady = 5)
+        self.loadButton = Button(self, text='Load',
+            command=lambda: self.game.player1.loadStrategy(askopenfilename(
+                filetypes=[('MensIco Strategy Files', '*.mstr')])))
+        self.loadButton.pack(side=TOP, padx=5, pady=5)
 
         # save strategy button
-        self.saveButton = Button(self, text = 'Save', command = lambda: self.game.player1.saveStrategy(asksaveasfilename(filetypes = [('MensIco Strategy Files','*.mstr')])))
-        self.saveButton.pack(side = TOP, padx = 5, pady = 5)
+        self.saveButton = Button(self, text='Save',
+            command=lambda: self.game.player1.saveStrategy(asksaveasfilename(
+                filetypes=[('MensIco Strategy Files', '*.mstr')])))
+        self.saveButton.pack(side=TOP, padx=5, pady=5)
 
         # quit button
-        Button(self, text = 'Quit', command = self.closeAll).pack(side = BOTTOM, padx = 5, pady = 5)
+        (Button(self, text='Quit', command=self.closeAll)
+         .pack(side=BOTTOM, padx=5, pady=5))
         self.protocol('WM_DELETE_WINDOW', self.closeAll)
 
         # reset button
-        self.resetButton = Button(self, text = 'Reset', command = self.reset, state = ['disabled'])
-        self.resetButton.pack(side = BOTTOM, padx = 5, pady = 5)
+        self.resetButton = Button(self, text='Reset',
+                                  command=self.reset, state=['disabled'])
+        self.resetButton.pack(side=BOTTOM, padx=5, pady=5)
 
         # mouse event handler
         self.can.bind("<Button-1>", self.putX)
+        # osx fix
         self.can.bind("<Button-2>", self.putCircle)
         self.can.bind("<Button-3>", self.putCircle)
 
         # space also work as doStep button
         self.bind("<space>", self.doStepByButton)
 
-# ---------------------------- Window Methods -------------------------------------
+    # -------------------------- Window Methods -------------------------------
 
-    # close all windows
     def closeAll(self):
         """ Close all remaining windows. """
         self.destroy()
         self.parent.quit()
 
-# --------------------------- Drawing Methods -------------------------------------
+    # ----------------------- Drawing Methods ---------------------------------
 
-    # from x,y coordinates returns the id of the cell
     def inside(self, x, y):
-        """ Returns the id for the canvas' x,y coordinates. """
+        """Returns the id for the canvas' x,y coordinates."""
         for key, value in self.positions.items():
             if x > value[0] and x < value[2] and y > value[1] and y < value[3]:
                 return key
 
-    # draw a circle
     def drawCircle(self, x, y):
-        """ First remove any existing circle from the canvas, then draw a new circle to the given coordinates. """
-        # we only want 1 circle a time, so remove any existing circle from the canvas
+        """First remove any existing circle from the canvas,
+        then draw a new circle to the given coordinates. """
+        # we only want 1 circle a time,
+        # so remove any existing circle from the canvas
         self.can.delete('circle')
-        self.can.create_oval(x + 5, y + 5, x + 45, y + 45, width = 5, outline = 'red', tags = 'circle')
+        self.can.create_oval(x + 5, y + 5, x + 45, y + 45,
+                             width=5, outline='red', tags='circle')
 
-    # draw an X
     def drawX(self, x, y):
-        """ First remove any existing X from the canvas, then draw a new X to the given coordinates. """
+        """First remove any existing X from the canvas,
+        then draw a new X to the given coordinates. """
         # we only want 1 X a time, so remove any existing X from the canvas
         self.can.delete('X')
-        self.can.create_line(x + 5, y + 5, x + 45, y + 45, width = 5, fill = 'green', tags = 'X')
-        self.can.create_line(x + 5, y + 45, x + 45, y + 5, width = 5, fill = 'green', tags = 'X')
+        self.can.create_line(x + 5, y + 5, x + 45, y + 45,
+                             width=5, fill='green', tags='X')
+        self.can.create_line(x + 5, y + 45, x + 45, y + 5,
+                             width=5, fill='green', tags='X')
 
-    # draw a triangle for a specific player
     def drawTriangle(self, x, y, player):
-        """ First remove any existing triangle from the canvas, then draw a new one to the given coordinates. """
+        """First remove any existing triangle from the canvas,
+        then draw a new one to the given coordinates."""
         # create a separate tagname for p1 and p2
         tagName = 'player' + str(player)
         # delete any previous instance
         self.can.delete(tagName)
         if player == 1:
-            self.can.create_polygon(x + 25, y + 5, x + 5, y + 45, x + 45, y + 45, width = 5, fill = 'orange', outline = 'black', tags = tagName)
+            self.can.create_polygon(x + 25, y + 5,
+                                    x + 5, y + 45,
+                                    x + 45, y + 45,
+                                    width=5, fill='orange', outline='black',
+                                    tags=tagName)
         else:
-            self.can.create_polygon(x + 5, y + 5, x + 45, y + 5, x + 25, y + 45, width = 5, fill = 'blue', outline = 'black',  tags = tagName)
+            self.can.create_polygon(x + 5, y + 5,
+                                    x + 45, y + 5,
+                                    x + 25, y + 45,
+                                    width=5, fill='blue', outline='black',
+                                    tags=tagName)
 
-    # draw a triangle for both player to the same cell
     def drawUnitedTriangle(self, x, y):
-        """ First remove any existing triangle from the canvas, then draw a new one to the given coordinates. """
+        """First remove any existing triangle from the canvas,
+        then draw a new one to the given coordinates."""
         # delete any previous instance
         self.can.delete('player1','player2')
         # create the two small triangles for the players
-        self.can.create_polygon(x + 20, y + 5, x + 5, y + 30, x + 35, y + 30, width = 5, fill = 'orange', outline = 'black', tags = 'player1')
-        self.can.create_polygon(x + 30, y + 45, x + 15, y + 20, x + 45, y + 20, width = 5, fill = 'blue', outline = 'black',  tags = 'player2')
+        self.can.create_polygon(x + 20, y + 5, x + 5, y + 30, x + 35, y + 30,
+                                width=5, fill='orange', outline='black',
+                                tags='player1')
+        self.can.create_polygon(x + 30, y + 45, x + 15, y + 20, x + 45, y + 20,
+                                width=5, fill='blue', outline='black',
+                                tags='player2')
 
-    # draw a dark grey square for the avaible steps
     def drawSquare(self, x, y):
         """ Draws a new square. """
         # draw the square
-        self.can.create_rectangle(x + 1, y + 1, x + 49, y + 49, fill = 'snow', tags = 'square')
+        self.can.create_rectangle(x + 1, y + 1, x + 49, y + 49,
+                                  fill='snow', tags='square')
 
-    # Checks if the user can put an X to the selected cell.
     def validX(self, id):
         """ Checks if the selected cell is valid for an X. """
 
@@ -277,7 +367,6 @@ class GameWindow(Tk):
                  act[1] == next[1] or
                  act[1] - 1 == next[1]))
 
-    # Checks if the user can put an X to the selected cell.
     def validCircle(self, id):
         """ Checks if the selected cell is valid for a Circle. """
 
@@ -289,51 +378,32 @@ class GameWindow(Tk):
                  act[1] == next[1] or
                  act[1] - 1 == next[1]))
 
-    # put the Circle to the cell we clicked in
     def putCircle(self, event):
         """ Draw a Circle to the selected sqare. """
         # if a circle can be put here ...
         if self.validCircle(self.inside(event.x, event.y)) == 1:
-            # try to play sound
-            try:
-                self.click.play()
-            except:
-                print 'click'
+            print 'click'
             # get and set our decision's id as well
             self.oppDec = self.inside(event.x, event.y)
             # get the corresponding coordinates, and draw the circle
             dest = self.positions[self.oppDec]
             self.drawCircle(dest[0], dest[1])
         else:
-            # try to play sound
-            try:
-                self.wrong_click.play()
-            except:
-                print 'wrong_click'
+            print 'wrong_click'
 
-    # put the X to the cell we clicked in
     def putX(self, event):
         """ Draw an X to the selected sqare. """
         # if an X can be put here ...
         if self.validX(self.inside(event.x, event.y)) == 1:
-            # try to play sound
-            try:
-                self.click.play()
-            except:
-                print 'click'
+            print 'click'
             # get and set our decision's id as well
             self.ownDec = self.inside(event.x, event.y)
             # get the corresponding coordinates, and draw the X
             dest = self.positions[self.ownDec]
             self.drawX(dest[0], dest[1])
         else:
-            # try to play sound
-            try:
-                self.wrong_click.play()
-            except:
-                print 'wrong_click'
+            print 'wrong_click'
 
-    # put the players to the given cells
     def putTri(self, key_p1, key_p2):
         """ Draw the players. """
         # from ids get the coordinates
