@@ -198,15 +198,13 @@ class GameWindow(Tk):
         self.resetButton = Button(self, text = 'Reset', command = self.reset, state = ['disabled'])
         self.resetButton.pack(side = BOTTOM, padx = 5, pady = 5)
 
-
         # mouse event handler
         self.can.bind("<Button-1>", self.putX)
+        self.can.bind("<Button-2>", self.putCircle)
         self.can.bind("<Button-3>", self.putCircle)
 
         # space also work as doStep button
         self.bind("<space>", self.doStepByButton)
-
-
 
 # ---------------------------- Window Methods -------------------------------------
 
@@ -215,8 +213,6 @@ class GameWindow(Tk):
         """ Close all remaining windows. """
         self.destroy()
         self.parent.quit()
-
-
 
 # --------------------------- Drawing Methods -------------------------------------
 
@@ -227,14 +223,12 @@ class GameWindow(Tk):
             if x > value[0] and x < value[2] and y > value[1] and y < value[3]:
                 return key
 
-
     # draw a circle
     def drawCircle(self, x, y):
         """ First remove any existing circle from the canvas, then draw a new circle to the given coordinates. """
         # we only want 1 circle a time, so remove any existing circle from the canvas
         self.can.delete('circle')
         self.can.create_oval(x + 5, y + 5, x + 45, y + 45, width = 5, outline = 'red', tags = 'circle')
-
 
     # draw an X
     def drawX(self, x, y):
@@ -243,7 +237,6 @@ class GameWindow(Tk):
         self.can.delete('X')
         self.can.create_line(x + 5, y + 5, x + 45, y + 45, width = 5, fill = 'green', tags = 'X')
         self.can.create_line(x + 5, y + 45, x + 45, y + 5, width = 5, fill = 'green', tags = 'X')
-
 
     # draw a triangle for a specific player
     def drawTriangle(self, x, y, player):
@@ -257,7 +250,6 @@ class GameWindow(Tk):
         else:
             self.can.create_polygon(x + 5, y + 5, x + 45, y + 5, x + 25, y + 45, width = 5, fill = 'blue', outline = 'black',  tags = tagName)
 
-
     # draw a triangle for both player to the same cell
     def drawUnitedTriangle(self, x, y):
         """ First remove any existing triangle from the canvas, then draw a new one to the given coordinates. """
@@ -267,13 +259,11 @@ class GameWindow(Tk):
         self.can.create_polygon(x + 20, y + 5, x + 5, y + 30, x + 35, y + 30, width = 5, fill = 'orange', outline = 'black', tags = 'player1')
         self.can.create_polygon(x + 30, y + 45, x + 15, y + 20, x + 45, y + 20, width = 5, fill = 'blue', outline = 'black',  tags = 'player2')
 
-
     # draw a dark grey square for the avaible steps
     def drawSquare(self, x, y):
         """ Draws a new square. """
         # draw the square
         self.can.create_rectangle(x + 1, y + 1, x + 49, y + 49, fill = 'snow', tags = 'square')
-
 
     # Checks if the user can put an X to the selected cell.
     def validX(self, id):
@@ -282,11 +272,10 @@ class GameWindow(Tk):
         act = self.own_pos[self.ownPosition]
         next = self.own_pos[id]
 
-        if (act[0] + 1 == next[0]) and (act[1] + 1 == next[1] or act[1] == next[1] or act[1] - 1 == next[1]):
-            return 1
-        else:
-            return 0
-
+        return (act[0] + 1 == next[0] and
+                (act[1] + 1 == next[1] or
+                 act[1] == next[1] or
+                 act[1] - 1 == next[1]))
 
     # Checks if the user can put an X to the selected cell.
     def validCircle(self, id):
@@ -295,11 +284,10 @@ class GameWindow(Tk):
         act = self.opp_pos[self.oppPosition]
         next = self.opp_pos[id]
 
-        if (act[0] + 1 == next[0]) and (act[1] + 1 == next[1] or act[1] == next[1] or act[1] - 1 == next[1]):
-            return 1
-        else:
-            return 0
-
+        return (act[0] + 1 == next[0] and
+                (act[1] + 1 == next[1] or
+                 act[1] == next[1] or
+                 act[1] - 1 == next[1]))
 
     # put the Circle to the cell we clicked in
     def putCircle(self, event):
@@ -323,7 +311,6 @@ class GameWindow(Tk):
             except:
                 print 'wrong_click'
 
-
     # put the X to the cell we clicked in
     def putX(self, event):
         """ Draw an X to the selected sqare. """
@@ -346,7 +333,6 @@ class GameWindow(Tk):
             except:
                 print 'wrong_click'
 
-
     # put the players to the given cells
     def putTri(self, key_p1, key_p2):
         """ Draw the players. """
@@ -362,7 +348,6 @@ class GameWindow(Tk):
             # draw separate triangles for the players
             self.drawTriangle(dest_p1[0], dest_p1[1], 1)
             self.drawTriangle(dest_p2[0], dest_p2[1], 2)
-
 
     def putSquares(self):
         """ Darkens cells for the possible steps. """
@@ -393,9 +378,6 @@ class GameWindow(Tk):
                 act = self.positions[candidate]
                 self.drawSquare(act[0], act[1])
 
-
-    # special thanks to Ene Uran from Daniweb for the dictionary key-search function!
-    # http://www.daniweb.com/software-development/python/code/217019
     def find_key(self, dic, val):
         """return the key of dictionary dic given the value"""
         try:
