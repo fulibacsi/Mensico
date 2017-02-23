@@ -5,8 +5,9 @@ from Tkinter import *
 from tkFileDialog import *
 from tkMessageBox import *
 
-from mensico.tabs import Tab, TabBar
 from mensico import engine
+from mensico.utils import find_key
+from mensico.tabs import Tab, TabBar
 
 
 class BoardInGUI(engine.Board):
@@ -37,28 +38,28 @@ class MainWindow(Tk):
          .pack(side=TOP, padx=5, pady=5))
 
         # MensIco Icon
-        self.icon = PhotoImage(file='data/resources/Icon.gif')
-        self.iconLabel = Label(self, text='MensIco', image=self.icon)
-        self.iconLabel.icon = self.icon
-        self.iconLabel.pack(side=LEFT, padx=5, pady=5)
+        icon = PhotoImage(file='data/resources/Icon.gif')
+        iconLabel = Label(self, text='MensIco', image=icon)
+        iconLabel.icon = icon
+        iconLabel.pack(side=LEFT, padx=5, pady=5)
 
         # mode indicator variable
-        self.mode = IntVar()
-        self.mode.set(1)
+        mode = IntVar()
+        mode.set(1)
 
         # radiobuttons for the modes
-        (Radiobutton(self, text='Play', variable=self.mode, value=1)
+        (Radiobutton(self, text='Play', variable=mode, value=1)
          .pack(side=TOP, padx=5, pady=5))
-        (Radiobutton(self, text='Test', variable=self.mode, value=2)
+        (Radiobutton(self, text='Test', variable=mode, value=2)
          .pack(side=TOP, padx=5, pady=5))
 
         # launch button
         (Button(self, text='Launch',
-                command=lambda: self.startProgram(self.mode))
+                command=lambda: self.startProgram(mode))
          .pack(side=TOP, padx=5, pady=5))
 
         # what's this button
-        (Button(self, text="What's this?", command=self.printHelp)
+        (Button(self, text="What's this?", command=self.help_window)
          .pack(side=TOP, padx=5, pady=5))
 
         # quit button
@@ -66,22 +67,22 @@ class MainWindow(Tk):
          .pack(side=BOTTOM, padx=5, pady=5))
         self.protocol('WM_DELETE_WINDOW', self.quit)
 
-    def printHelp(self):
+    def help_window(self):
         """ Show help window."""
 
         # window init
-        self.help = Toplevel(self)
-        self.help.title(engine.VERSION + ' test results')
+        helpwindow = Toplevel(self)
+        helpwindow.title(engine.VERSION + ' test results')
 
         # show the description
         description = open('data/resources/description.txt').read()
-        Label(self.help, text=description, justify=LEFT).pack(padx=5, pady=5)
+        Label(helpwindow, text=description, justify=LEFT).pack(padx=5, pady=5)
 
         # close button
-        (Button(self.help, text='Ok', command=self.help.destroy)
+        (Button(helpwindow, text='Ok', command=helpwindow.destroy)
          .pack(padx=5, pady=5))
 
-        self.help.protocol('WM_DELETE_WINDOW', self.help.destroy)
+        self.help.protocol('WM_DELETE_WINDOW', helpwindow.destroy)
 
     def startProgram(self, mode):
         """ Launch the program in the selected mode. """
@@ -201,8 +202,10 @@ class GameWindow(Tk):
         self.ownDec = IntVar()
         self.oppDec = IntVar()
 
-        # ---------------------- Init: Window drawing -------------------------
+        self.draw_main()
 
+    # ---------------------- Init: Window drawing -------------------------
+    def draw_main(self):
         # name the window
         self.title(engine.VERSION)
 
@@ -211,7 +214,7 @@ class GameWindow(Tk):
 
         # draw gamefield
         self.can.create_rectangle(50, 50, 300, 450, width=3, fill='grey')
-        self.lines = [
+        boardlines = [
             [50, 100, 300, 100],
             [50, 150, 300, 150],
             [50, 200, 300, 200],
@@ -225,7 +228,7 @@ class GameWindow(Tk):
             [250, 50, 250, 450],
             [300, 50, 300, 450]
         ]
-        for line in self.lines:
+        for line in boardlines:
             self.can.create_line(line, width=3)
         self.can.pack(side=LEFT, padx=5, pady=5)
 
@@ -269,9 +272,9 @@ class GameWindow(Tk):
         self.saveButton.pack(side=TOP, padx=5, pady=5)
 
         # quit button
-        (Button(self, text='Quit', command=self.closeAll)
+        (Button(self, text='Quit', command=self.close_all)
          .pack(side=BOTTOM, padx=5, pady=5))
-        self.protocol('WM_DELETE_WINDOW', self.closeAll)
+        self.protocol('WM_DELETE_WINDOW', self.close_all)
 
         # reset button
         self.resetButton = Button(self, text='Reset',
@@ -289,7 +292,7 @@ class GameWindow(Tk):
 
     # -------------------------- Window Methods -------------------------------
 
-    def closeAll(self):
+    def close_all(self):
         """ Close all remaining windows. """
         self.destroy()
         self.parent.quit()
@@ -437,33 +440,26 @@ class GameWindow(Tk):
         oppAct = self.opp_pos[self.oppPosition]
 
         # store the id's of the next possible steps
-        candidates.append(self.find_key(self.own_pos,
-                                        [ownAct[0] + 1, ownAct[1] - 1]))
-        candidates.append(self.find_key(self.own_pos,
-                                        [ownAct[0] + 1, ownAct[1]]))
-        candidates.append(self.find_key(self.own_pos,
-                                        [ownAct[0] + 1, ownAct[1] + 1]))
+        candidates.append(find_key(self.own_pos,
+                                   [ownAct[0] + 1, ownAct[1] - 1]))
+        candidates.append(find_key(self.own_pos,
+                                   [ownAct[0] + 1, ownAct[1]]))
+        candidates.append(find_key(self.own_pos,
+                                   [ownAct[0] + 1, ownAct[1] + 1]))
 
         # store the id's of the next possible opponent steps
-        candidates.append(self.find_key(self.opp_pos,
-                                        [oppAct[0] + 1, oppAct[1] - 1]))
-        candidates.append(self.find_key(self.opp_pos,
-                                        [oppAct[0] + 1, oppAct[1]]))
-        candidates.append(self.find_key(self.opp_pos,
-                                        [oppAct[0] + 1, oppAct[1] + 1]))
+        candidates.append(find_key(self.opp_pos,
+                                   [oppAct[0] + 1, oppAct[1] - 1]))
+        candidates.append(find_key(self.opp_pos,
+                                   [oppAct[0] + 1, oppAct[1]]))
+        candidates.append(find_key(self.opp_pos,
+                                   [oppAct[0] + 1, oppAct[1] + 1]))
 
         # if it's a valid position, put a square there
         for candidate in candidates:
             if candidate is not None:
                 act = self.positions[candidate]
                 self.drawSquare(act[0], act[1])
-
-    def find_key(self, dic, val):
-        """return the key of dictionary dic given the value"""
-        try:
-            return [k for k, v in dic.iteritems() if v == val][0]
-        except:
-            return None
 
     # ------------------------- Game Related Methods ------------------------
 
@@ -524,9 +520,9 @@ class GameWindow(Tk):
                 self.game.doOneStep(engine.LEARNINGTYPE, options)
 
                 # set the positions from the result of the game.doOneStep
-                self.ownPosition = self.find_key(
+                self.ownPosition = find_key(
                     self.own_pos, self.game.player2.getOwnCoord())
-                self.oppPosition = self.find_key(
+                self.oppPosition = find_key(
                     self.opp_pos, self.game.player2.getOppCoord())
 
                 # draw the triagles and shadings
@@ -568,10 +564,10 @@ class GameWindow(Tk):
         self.game.reset()
 
         # set the players to their intended place
-        self.ownPosition = self.find_key(self.own_pos,
-                                         self.game.player2.getOwnCoord())
-        self.oppPosition = self.find_key(self.opp_pos,
-                                         self.game.player2.getOppCoord())
+        self.ownPosition = find_key(self.own_pos,
+                                    self.game.player2.getOwnCoord())
+        self.oppPosition = find_key(self.opp_pos,
+                                    self.game.player2.getOppCoord())
         self.putTri(self.ownPosition, self.oppPosition)
 
         # remove the circles and Xs, and darkens possible steps
@@ -666,18 +662,17 @@ class TestWindow(Tk):
         Label(self, text='\nLearner').pack(side=TOP, padx=5)
 
         # Reset learner button
-        self.resetLearnerButton = Button(self, text='Reset',
-                                         command=self.resetLearner)
-        self.resetLearnerButton.pack(side=TOP, padx=5)
+        (Button(self, text='Reset', command=self.resetLearner)
+         .pack(side=TOP, padx=5))
 
         # quit button
-        (Button(self, text='Quit', command=self.closeAll)
+        (Button(self, text='Quit', command=self.close_all)
          .pack(side=BOTTOM, padx=5, pady=5))
-        self.protocol('WM_DELETE_WINDOW', self.closeAll)
+        self.protocol('WM_DELETE_WINDOW', self.close_all)
 
 # ---------------------- Test Window Related Methods --------------------------
 
-    def closeAll(self):
+    def close_all(self):
         """ Close every remaining window. """
 
         # try to close the result window
