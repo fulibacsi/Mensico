@@ -1,51 +1,46 @@
-# -*- coding:Utf-8 -*-
-## ----- mensico_engine_v15.py -----
-##
-##  The program implements the game MensIco, and some learning method to learn the opponent's
-##  strategy.
-##
-##
-##  Classes:
-##      - ProbMat
-##          Stores a probability matrix of a given size.
-##
-##      - Player
-##          Implements a MensIco player.
-##
-##      - Board
-##          Implements the game's board, players, the actions, and the learning methods as well.
-##
-##      - Error
-##          Implements error measuring.
-##
-##
-## Copyright (C) 2012, Fülöp, András, fulibacsi@gmail.com
-##
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
-##
+#  The program implements the game MensIco, and some learning method to learn the opponent's
+#  strategy.
+#
+#
+#  Classes:
+#      - ProbMat
+#          Stores a probability matrix of a given size.
+#
+#      - Player
+#          Implements a MensIco player.
+#
+#      - Board
+#          Implements the game's board, players, the actions, and the learning methods as well.
+#
+#      - Error
+#          Implements error measuring.
+#
+#
+# Copyright (C) 2012, Fülöp, András, fulibacsi@gmail.com
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# imports
 import random
 import math
 from fractions import Fraction
 import itertools
 
 
-# -----------------------------------------------------------------------------------------------------
-# ----------------------------------------- GLOBAL VARIABLES ------------------------------------------
-# -----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# -------------------------- GLOBAL VARIABLES ---------------------------------
+# -----------------------------------------------------------------------------
 
 # smallest float value to use
 MINFLOAT = math.ldexp(1.0, -30)
@@ -83,9 +78,34 @@ ERRORTYPE = 1
 VERSION = 'MensIco2 v1.5 beta'
 
 
-# -----------------------------------------------------------------------------------------------------
-# ------------------------------------------- ProbMat class -------------------------------------------
-# -----------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# --------------------- ProbMat class -------------------------------------
+# -------------------------------------------------------------------------
+import numpy as np
+
+class NProbMat(object):
+
+    def __init__(self, x=5, y=8):
+        self.matrix = self.init_mat(x, y)
+        
+    def init_mat(self, x, y):
+        matrix = np.ones((y, x+2))
+        matrix[:, 0] = 0.
+        matrix[:, -1] = 0.
+        for row, width in enumerate(range(1, x, 2)):
+            matrix[row, 0:(x+2 - width) / 2] = 0.
+            matrix[row, (x+2 - width) / 2 + width:-1] = 0.
+        
+        return self.scale(matrix)
+
+    def scale(self, matrix):
+        if len(matrix.shape) == 1:
+            matrix = matrix.reshape(1, len(matrix))
+        sums = matrix.sum(axis=1)[:, np.newaxis]
+        return matrix / sums
+    
+    def export(self, filename):
+        np.save(filename, self.matrix)
 
 
 class ProbMat:
@@ -138,7 +158,6 @@ class ProbMat:
 # end of setters, getters
 
 
-    # rescale the probability matrix
     def rescale(self, line = -1):
         """ Rescale the whole matrix, or one of the rows."""
 
@@ -198,7 +217,10 @@ class Agent:
     """A gaming agent."""
 
     # init the agent
-    def __init__(self, x_koord = 0, y_koord = 0, opp_x = 0, opp_y = 0, pos_mat = ProbMat(5,8), opp_mat = ProbMat(5,8)):
+    def __init__(self,
+                 x_koord=0, y_koord=0,
+                 opp_x=0, opp_y=0,
+                 pos_mat=NProbMat(5, 8), opp_mat=NProbMat(5, 8)):
         self.x = x_koord
         self.y = y_koord
         self.wins = 0
@@ -208,143 +230,145 @@ class Agent:
         self.opponent_matrix = opp_mat
 
 
-# setters, getters
+# # setters, getters
 
-    # get own coordinates
-    def getOwnCoord(self):
-        return [self.x, self.y]
+#     # get own coordinates
+#     def getOwnCoord(self):
+#         return [self.x, self.y]
 
-    # set own coordinates to a specified coordinate
-    def setOwnCoord(self, x_koord, y_koord):
-        self.x = x_koord
-        self.y = y_koord
+#     # set own coordinates to a specified coordinate
+#     def setOwnCoord(self, x_koord, y_koord):
+#         self.x = x_koord
+#         self.y = y_koord
 
-    # get opponent's coordinates
-    def getOppCoord(self):
-        return [self.oppX, self.oppY]
+#     # get opponent's coordinates
+#     def getOppCoord(self):
+#         return [self.oppX, self.oppY]
 
-    # set opponent's coordinates to a specified coordinate
-    def setOppCoord(self, x_koord, y_koord):
-        self.oppX = x_koord
-        self.oppY = y_koord
+#     # set opponent's coordinates to a specified coordinate
+#     def setOppCoord(self, x_koord, y_koord):
+#         self.oppX = x_koord
+#         self.oppY = y_koord
 
-    # get the position matrix
-    def getPosMat(self):
-        return self.position_matrix.getMatrix()
+#     # get the position matrix
+#     def getPosMat(self):
+#         return self.position_matrix.getMatrix()
 
-    # set the position matrix to a matrix
-    def setPosMat(self, dec_mat):
-        self.position_matrix.setMatrix(dec_mat)
+#     # set the position matrix to a matrix
+#     def setPosMat(self, dec_mat):
+#         self.position_matrix.setMatrix(dec_mat)
 
-    # get a specified element from the position matrix
-    def getPosMatItem(self, x, y):
-        return self.position_matrix.getMatrixItem(x, y)
+#     # get a specified element from the position matrix
+#     def getPosMatItem(self, x, y):
+#         return self.position_matrix.getMatrixItem(x, y)
 
-    # set the position matrix specified element to a value
-    def setPosMatItem(self, x, y, value):
-        self.position_matrix.setMatrixItem(x, y, value)
+#     # set the position matrix specified element to a value
+#     def setPosMatItem(self, x, y, value):
+#         self.position_matrix.setMatrixItem(x, y, value)
 
-    # rescale position matrix
-    def rescalePosMat(self, line = - 1):
-        self.position_matrix.rescale(line)
+#     # rescale position matrix
+#     def rescalePosMat(self, line = - 1):
+#         self.position_matrix.rescale(line)
 
-    # get the opponent's matrix
-    def getOppMat(self):
-        return self.opponent_matrix.getMatrix()
+#     # get the opponent's matrix
+#     def getOppMat(self):
+#         return self.opponent_matrix.getMatrix()
 
-    # set the opponent's matrix to a matrix
-    def setOppMat(self, dec_mat):
-        self.opponent_matrix.setMatrix(dec_mat)
+#     # set the opponent's matrix to a matrix
+#     def setOppMat(self, dec_mat):
+#         self.opponent_matrix.setMatrix(dec_mat)
 
-    # get a specified element from the opponent's matrix
-    def getOppMatItem(self, x, y):
-        return self.opponent_matrix.getMatrixItem(x, y)
+#     # get a specified element from the opponent's matrix
+#     def getOppMatItem(self, x, y):
+#         return self.opponent_matrix.getMatrixItem(x, y)
 
-    # set the opponent's matrix specified element to a value
-    def setOppMatItem(self, x, y, value):
-        self.opponent_matrix.setMatrixItem(x, y, value)
+#     # set the opponent's matrix specified element to a value
+#     def setOppMatItem(self, x, y, value):
+#         self.opponent_matrix.setMatrixItem(x, y, value)
 
-    # rescale opponent's matrix
-    def rescaleOppMat(self, line = - 1):
-        self.opponent_matrix.rescale(line)
+#     # rescale opponent's matrix
+#     def rescaleOppMat(self, line = - 1):
+#         self.opponent_matrix.rescale(line)
 
-    # log position matrix to PosMat.csv
-    def logPosMat(self, logFileName = "PosMat.csv"):
-        self.position_matrix.logMatrix(logFileName)
+#     # log position matrix to PosMat.csv
+#     def logPosMat(self, logFileName = "PosMat.csv"):
+#         self.position_matrix.logMatrix(logFileName)
 
-    # log opponent's matrix to OppMat.csv
-    def logOppMat(self, logFileName = "OppMat.csv"):
-        self.opponent_matrix.logMatrix(logFileName)
+#     # log opponent's matrix to OppMat.csv
+#     def logOppMat(self, logFileName = "OppMat.csv"):
+#         self.opponent_matrix.logMatrix(logFileName)
 
-    # get the number of wins
-    def getWins(self):
-        return self.wins
+#     # get the number of wins
+#     def getWins(self):
+#         return self.wins
 
-    # set the number of wins
-    def setWins(self, value):
-        self.wins = value
+#     # set the number of wins
+#     def setWins(self, value):
+#         self.wins = value
 
-    # increase the number of wins
-    def incWins(self):
-        self.wins = self.wins + 1
+#     # increase the number of wins
+#     def incWins(self):
+#         self.wins = self.wins + 1
 
-# end of setters, getters
+# # end of setters, getters
 
 
-    # Save strategy to a file
-    def saveStrategy(self, filename):
+    def save_strategy(self, filename):
         """ Save probability matrices to a file. """
-        try:
-            outfile = open(filename,'w')
-            outfile.write("# player move\n")
-            for line in self.getPosMat():
-                for i, elem in enumerate(line):
-                    if i < len(line) - 1:
-                        outfile.write(str(elem) + ', ')
-                    else:
-                        outfile.write(str(elem) + '\n')
-            outfile.write("# player pred\n")
-            for line in self.getOppMat():
-                for i, elem in enumerate(line):
-                    if i < len(line) - 1:
-                        outfile.write(str(elem) + ', ')
-                    else:
-                        outfile.write(str(elem) + '\n')
-            outfile.close()
-            print "Saved to " + filename
-        except:
-            print "Could not save strategy!"
+        np.savez(filename,
+                 player=self.position_matrix,
+                 opponent=self.opponent_matrix)
+        # try:
+        #     outfile = open(filename,'w')
+        #     outfile.write("# player move\n")
+        #     for line in self.getPosMat():
+        #         for i, elem in enumerate(line):
+        #             if i < len(line) - 1:
+        #                 outfile.write(str(elem) + ', ')
+        #             else:
+        #                 outfile.write(str(elem) + '\n')
+        #     outfile.write("# player pred\n")
+        #     for line in self.getOppMat():
+        #         for i, elem in enumerate(line):
+        #             if i < len(line) - 1:
+        #                 outfile.write(str(elem) + ', ')
+        #             else:
+        #                 outfile.write(str(elem) + '\n')
+        #     outfile.close()
+        #     print "Saved to " + filename
+        # except:
+        #     print "Could not save strategy!"
 
 
-
-    # Load strategy from a file
-    def loadStrategy(self, filename, nolog = 0):
+    def load_strategy(self, filename):
         """ Load probability matrices from a file. """
-        try:
-            infile = open(filename, 'r')
-            problist = infile.readlines()
-            infile.close()
-            temp = [[], []]
-            current = -1
-            actlist = temp[current]
-            for line in problist:
-                if line[0] == '#':
-                    current += 1
-                    actlist = temp[current]
-                else:
-                    actlist.append(map(float, line.rstrip().split(', ')))
+        matrices = np.load(filename)
+        self.position_matrix = matrices['player']
+        self.opponent_matrix = matrices['opponent']
+        # try:
+        #     infile = open(filename, 'r')
+        #     problist = infile.readlines()
+        #     infile.close()
+        #     temp = [[], []]
+        #     current = -1
+        #     actlist = temp[current]
+        #     for line in problist:
+        #         if line[0] == '#':
+        #             current += 1
+        #             actlist = temp[current]
+        #         else:
+        #             actlist.append(map(float, line.rstrip().split(', ')))
 
-            self.setPosMat(temp[0])
-            self.setOppMat(temp[1])
-            if nolog == 0:
-                print "Loaded from " + filename
-        except:
-            print "Could not open the specified strategy file, playing default strategy!"
+        #     self.setPosMat(temp[0])
+        #     self.setOppMat(temp[1])
+        #     if nolog == 0:
+        #         print "Loaded from " + filename
+        # except:
+        #     print "Could not open the specified strategy file, playing default strategy!"
 
 
 
-    # special thanks to Eli Bendersky for the Weighted random generation benchmarks!
-    # http://eli.thegreenplace.net/2010/01/22/weighted-random-generation-in-python/
+    # np.random.choice(array, p=probabilities)
     def weighted_choice_sub(self, weights):
         rnd = random.random() * sum(weights)
         for i, w in enumerate(weights):
@@ -363,10 +387,13 @@ class Agent:
 
         try:
             # create a list for the possible step's probability
-            pos_list = [self.position_matrix.getMatrixItem(self.x + 1, self.y - 1) * 100, self.position_matrix.getMatrixItem(self.x + 1, self.y) * 100,\
-            self.position_matrix.getMatrixItem(self.x + 1, self.y + 1) * 100]
+            pos_list = [self.position_matrix[self.x + 1, self.y - 1] * 100,
+                        self.position_matrix[self.x + 1, self.y] * 100,
+                        self.position_matrix[self.x + 1, self.y + 1] * 100]
             # and for the positions
-            pos_l = [[self.x + 1, self.y - 1], [self.x + 1, self.y], [self.x + 1, self.y + 1]]
+            pos_l = [[self.x + 1, self.y - 1],
+                     [self.x + 1, self.y],
+                     [self.x + 1, self.y + 1]]
             # remove the impossible steps
             for i in range(len(pos_list) - 1, -1, -1):
                 if pos_list[i] <= 0.0:
@@ -374,10 +401,13 @@ class Agent:
                     del pos_list[i]
 
             # create a list for the opponent's step's probability
-            opp_list = [self.opponent_matrix.getMatrixItem(self.oppX + 1, self.oppY - 1) * 100, self.opponent_matrix.getMatrixItem(self.oppX + 1, self.oppY) * 100,\
-            self.opponent_matrix.getMatrixItem(self.oppX + 1, self.oppY + 1) * 100]
+            opp_list = [self.opponent_matrix[self.oppX + 1, self.oppY - 1] * 100,
+                        self.opponent_matrix[self.oppX + 1, self.oppY] * 100,
+                        self.opponent_matrix[self.oppX + 1, self.oppY + 1] * 100]
             # and for the positions
-            opp_l = [[self.oppX + 1, self.oppY - 1], [self.oppX + 1, self.oppY], [self.oppX + 1, self.oppY + 1]]
+            opp_l = [[self.oppX + 1, self.oppY - 1],
+                     [self.oppX + 1, self.oppY],
+                     [self.oppX + 1, self.oppY + 1]]
             # remove the impossible steps
             for i in range(len(opp_list) - 1, -1, -1):
                 if opp_list[i] <= 0.0:
@@ -386,16 +416,16 @@ class Agent:
 
         except:
             print self.x, self.y, self.oppX, self.oppY
-            self.position_matrix.setMatrixItem(self.x, self.y, 'x')
-            for act in self.position_matrix.getMatrix():
+            self.position_matrix[self.x, self.y] = 'x'
+            for act in self.position_matrix:
                 print act
-            self.opponent_matrix.setMatrixItem(self.oppX, self.oppY, 'x')
-            for act in self.opponent_matrix.getMatrix():
+            self.opponent_matrix[self.oppX, self.oppY] = 'x'
+            for act in self.opponent_matrix:
                 print act
             raise
 
         # if we don't explore the gamespace
-        if(random.random() < prob):
+        if random.random() < prob:
             # create the next step based on probabilities
             dec.append(pos_l[self.weighted_choice_sub(pos_list)])
         else:
@@ -1340,7 +1370,3 @@ class Error:
         else:
             print 'Error calculation error!'
             raise
-
-
-
-
