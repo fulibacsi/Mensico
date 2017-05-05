@@ -37,6 +37,8 @@ import math
 from fractions import Fraction
 import itertools
 
+from mensico.utils import lcm, weighted_choice  # TODO: check if input is nparray
+
 
 # -----------------------------------------------------------------------------
 # -------------------------- GLOBAL VARIABLES ---------------------------------
@@ -83,19 +85,20 @@ VERSION = 'MensIco2 v1.5 beta'
 # -------------------------------------------------------------------------
 import numpy as np
 
+
 class NProbMat(object):
 
     def __init__(self, x=5, y=8):
         self.matrix = self.init_mat(x, y)
-        
+
     def init_mat(self, x, y):
-        matrix = np.ones((y, x+2))
+        matrix = np.ones((y, x + 2))
         matrix[:, 0] = 0.
         matrix[:, -1] = 0.
         for row, width in enumerate(range(1, x, 2)):
-            matrix[row, 0:(x+2 - width) / 2] = 0.
-            matrix[row, (x+2 - width) / 2 + width:-1] = 0.
-        
+            matrix[row, 0: (x + 2 - width) / 2] = 0.
+            matrix[row, (x + 2 - width) / 2 + width: -1] = 0.
+
         return self.scale(matrix)
 
     def scale(self, matrix):
@@ -103,15 +106,17 @@ class NProbMat(object):
             matrix = matrix.reshape(1, len(matrix))
         sums = matrix.sum(axis=1)[:, np.newaxis]
         return matrix / sums
-    
+
     def export(self, filename):
         np.save(filename, self.matrix)
 
 
+# --------------------- Learning method related misc functions ----------------
+# greatest common multiply
+
 class ProbMat:
     """Storing and managing probability matrices."""
 
-    # init a probability matrix - create the matrix itself
     def __init__(self, x = 5, y = 8):
         """ Init a matrix with the given dimensions. """
 
@@ -208,15 +213,13 @@ class ProbMat:
 
 
 
-# -----------------------------------------------------------------------------------------------------
-# -------------------------------------------- Agent class --------------------------------------------
-# -----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# ------------------------------- Agent class ---------------------------------
+# -----------------------------------------------------------------------------
 
-
-class Agent:
+class Agent(object):
     """A gaming agent."""
 
-    # init the agent
     def __init__(self,
                  x_koord=0, y_koord=0,
                  opp_x=0, opp_y=0,
@@ -229,157 +232,25 @@ class Agent:
         self.position_matrix = pos_mat
         self.opponent_matrix = opp_mat
 
-
-# # setters, getters
-
-#     # get own coordinates
-#     def getOwnCoord(self):
-#         return [self.x, self.y]
-
-#     # set own coordinates to a specified coordinate
-#     def setOwnCoord(self, x_koord, y_koord):
-#         self.x = x_koord
-#         self.y = y_koord
-
-#     # get opponent's coordinates
-#     def getOppCoord(self):
-#         return [self.oppX, self.oppY]
-
-#     # set opponent's coordinates to a specified coordinate
-#     def setOppCoord(self, x_koord, y_koord):
-#         self.oppX = x_koord
-#         self.oppY = y_koord
-
-#     # get the position matrix
-#     def getPosMat(self):
-#         return self.position_matrix.getMatrix()
-
-#     # set the position matrix to a matrix
-#     def setPosMat(self, dec_mat):
-#         self.position_matrix.setMatrix(dec_mat)
-
-#     # get a specified element from the position matrix
-#     def getPosMatItem(self, x, y):
-#         return self.position_matrix.getMatrixItem(x, y)
-
-#     # set the position matrix specified element to a value
-#     def setPosMatItem(self, x, y, value):
-#         self.position_matrix.setMatrixItem(x, y, value)
-
-#     # rescale position matrix
-#     def rescalePosMat(self, line = - 1):
-#         self.position_matrix.rescale(line)
-
-#     # get the opponent's matrix
-#     def getOppMat(self):
-#         return self.opponent_matrix.getMatrix()
-
-#     # set the opponent's matrix to a matrix
-#     def setOppMat(self, dec_mat):
-#         self.opponent_matrix.setMatrix(dec_mat)
-
-#     # get a specified element from the opponent's matrix
-#     def getOppMatItem(self, x, y):
-#         return self.opponent_matrix.getMatrixItem(x, y)
-
-#     # set the opponent's matrix specified element to a value
-#     def setOppMatItem(self, x, y, value):
-#         self.opponent_matrix.setMatrixItem(x, y, value)
-
-#     # rescale opponent's matrix
-#     def rescaleOppMat(self, line = - 1):
-#         self.opponent_matrix.rescale(line)
-
-#     # log position matrix to PosMat.csv
-#     def logPosMat(self, logFileName = "PosMat.csv"):
-#         self.position_matrix.logMatrix(logFileName)
-
-#     # log opponent's matrix to OppMat.csv
-#     def logOppMat(self, logFileName = "OppMat.csv"):
-#         self.opponent_matrix.logMatrix(logFileName)
-
-#     # get the number of wins
-#     def getWins(self):
-#         return self.wins
-
-#     # set the number of wins
-#     def setWins(self, value):
-#         self.wins = value
-
-#     # increase the number of wins
-#     def incWins(self):
-#         self.wins = self.wins + 1
-
-# # end of setters, getters
-
-
     def save_strategy(self, filename):
         """ Save probability matrices to a file. """
-        np.savez(filename,
-                 player=self.position_matrix,
-                 opponent=self.opponent_matrix)
-        # try:
-        #     outfile = open(filename,'w')
-        #     outfile.write("# player move\n")
-        #     for line in self.getPosMat():
-        #         for i, elem in enumerate(line):
-        #             if i < len(line) - 1:
-        #                 outfile.write(str(elem) + ', ')
-        #             else:
-        #                 outfile.write(str(elem) + '\n')
-        #     outfile.write("# player pred\n")
-        #     for line in self.getOppMat():
-        #         for i, elem in enumerate(line):
-        #             if i < len(line) - 1:
-        #                 outfile.write(str(elem) + ', ')
-        #             else:
-        #                 outfile.write(str(elem) + '\n')
-        #     outfile.close()
-        #     print "Saved to " + filename
-        # except:
-        #     print "Could not save strategy!"
-
+        try:
+            np.savez(filename,
+                     player=self.position_matrix,
+                     opponent=self.opponent_matrix)
+        except IOError as e:
+            print "Could not save strategy. (Error: {})".format(e)
 
     def load_strategy(self, filename):
         """ Load probability matrices from a file. """
-        matrices = np.load(filename)
-        self.position_matrix = matrices['player']
-        self.opponent_matrix = matrices['opponent']
-        # try:
-        #     infile = open(filename, 'r')
-        #     problist = infile.readlines()
-        #     infile.close()
-        #     temp = [[], []]
-        #     current = -1
-        #     actlist = temp[current]
-        #     for line in problist:
-        #         if line[0] == '#':
-        #             current += 1
-        #             actlist = temp[current]
-        #         else:
-        #             actlist.append(map(float, line.rstrip().split(', ')))
+        try:
+            matrices = np.load(filename)
+            self.position_matrix = matrices['player']
+            self.opponent_matrix = matrices['opponent']
+        except IOError as e:
+            print "Could not load strategy. (Error: {})".format(e)
 
-        #     self.setPosMat(temp[0])
-        #     self.setOppMat(temp[1])
-        #     if nolog == 0:
-        #         print "Loaded from " + filename
-        # except:
-        #     print "Could not open the specified strategy file, playing default strategy!"
-
-
-
-    # np.random.choice(array, p=probabilities)
-    def weighted_choice_sub(self, weights):
-        rnd = random.random() * sum(weights)
-        for i, w in enumerate(weights):
-            rnd -= w
-            if rnd < 0:
-                return i
-
-
-
-    # where should I step? Where would the opponent step?
-    def decide(self, prob = 1.0):
+    def decide(self, prob=1.0):
         """ Make a decision based on probabilities. """
 
         # create an empty decision
@@ -401,9 +272,10 @@ class Agent:
                     del pos_list[i]
 
             # create a list for the opponent's step's probability
-            opp_list = [self.opponent_matrix[self.oppX + 1, self.oppY - 1] * 100,
-                        self.opponent_matrix[self.oppX + 1, self.oppY] * 100,
-                        self.opponent_matrix[self.oppX + 1, self.oppY + 1] * 100]
+            opp_list = [
+                self.opponent_matrix[self.oppX + 1, self.oppY - 1] * 100,
+                self.opponent_matrix[self.oppX + 1, self.oppY] * 100,
+                self.opponent_matrix[self.oppX + 1, self.oppY + 1] * 100]
             # and for the positions
             opp_l = [[self.oppX + 1, self.oppY - 1],
                      [self.oppX + 1, self.oppY],
@@ -413,8 +285,7 @@ class Agent:
                 if opp_list[i] <= 0.0:
                     del opp_l[i]
                     del opp_list[i]
-
-        except:
+        except Exception as e:
             print self.x, self.y, self.oppX, self.oppY
             self.position_matrix[self.x, self.y] = 'x'
             for act in self.position_matrix:
@@ -422,12 +293,12 @@ class Agent:
             self.opponent_matrix[self.oppX, self.oppY] = 'x'
             for act in self.opponent_matrix:
                 print act
-            raise
+            raise e
 
         # if we don't explore the gamespace
         if random.random() < prob:
             # create the next step based on probabilities
-            dec.append(pos_l[self.weighted_choice_sub(pos_list)])
+            dec.append(pos_l[weighted_choice(pos_list)])
         else:
             # choose randomly
             decision = random.choice(pos_l)
@@ -436,7 +307,7 @@ class Agent:
         # if we don't explore the gamespace
         if(random.random() < prob):
             # create the opponent's next step based on probabilities
-            dec.append(opp_l[self.weighted_choice_sub(opp_list)])
+            dec.append(opp_l[weighted_choice(opp_list)])
         else:
             # choose randomly
             decision = random.choice(opp_l)
@@ -444,34 +315,16 @@ class Agent:
 
         return dec
 
-
     # manually set the decision, if the setup is valid
-    def setDecision(self, pos, opp):
-        if self.position_matrix.getMatrixItem(pos[0], pos[1]) != 0.0 and self.opponent_matrix.getMatrixItem(opp[0], opp[1]) != 0.0:
+    def set_decision(self, pos, opp):
+        if (not self.position_matrix[pos[0], pos[1]] == 0.0 and
+            not self.opponent_matrix[opp[0], opp[1]] == 0.0):
             return [pos, opp]
         else:
             print 'Invalid positions!'
             return None
 
-
-# --------------------- Learning method related misc functions -----------------------------------
-
-    # greatest common multiply
-    def gcd(self, num1, num2):
-        while num2 > 0:
-            num1, num2 = num2, num1 % num2
-        return num1
-
-    # least common divisor
-    def lcm(self, num1, num2):
-        result = num1 * num2 / self.gcd(num1, num2)
-        return result
-
-
-# --------------------------------- Learning methods ----------------------------------------------
-
-
-
+# --------------------------------- Learning methods --------------------------
 
     # learn from the actual step
     def learn(self, iCanStep, oppCanStep, myMove, oppMove, learningConstant, typeOfLearning):
@@ -866,15 +719,15 @@ class Agent:
                 # get least common multiples
                 lcm_step = temp_step[0].denominator
                 if len(temp_step) == 3:
-                    lcm_step = self.lcm(lcm_step, self.lcm(temp_step[1].denominator, temp_step[2].denominator))
+                    lcm_step = lcm(lcm_step, lcm(temp_step[1].denominator, temp_step[2].denominator))
                 elif len(temp_step) == 2:
-                    lcm_step = self.lcm(lcm_step, temp_step[1].denominator)
+                    lcm_step = lcm(lcm_step, temp_step[1].denominator)
 
                 lcm_pred = temp_pred[0].denominator
                 if len(temp_pred) == 3:
-                    lcm_pred = self.lcm(lcm_pred, self.lcm(temp_pred[1].denominator, temp_pred[2].denominator))
+                    lcm_pred = lcm(lcm_pred, lcm(temp_pred[1].denominator, temp_pred[2].denominator))
                 elif len(temp_pred) == 2:
-                    lcm_pred = self.lcm(lcm_pred, temp_pred[1].denominator)
+                    lcm_pred = lcm(lcm_pred, temp_pred[1].denominator)
 
             # modify values according the outcome
                 if iCanStep == 1 and oppCanStep == 1:
@@ -946,9 +799,9 @@ class Agent:
 
 
 
-# -----------------------------------------------------------------------------------------------------
-# -------------------------------------------- Board class --------------------------------------------
-# -----------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# ----------------------------- Board class -----------------------------------
+# -----------------------------------------------------------------------------
 
 
 class Board:
@@ -974,7 +827,7 @@ class Board:
         self.human = human
 
 
-# --------------------------------- Information methods ----------------------------------------------
+# ---------------------------- Information methods ----------------------------
 
 
     # show some info about the current round
