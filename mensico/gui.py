@@ -1,4 +1,4 @@
-# -*- coding:Utf-8 -*-
+# encoding: utf-8
 
 from ttk import *
 from Tkinter import *
@@ -31,7 +31,7 @@ class MainWindow(Tk):
         Tk.__init__(self)
 
         # window title
-        self.title(engine.VERSION + ' Mode Select')
+        self.title(engine.__version__ + ' Mode Select')
 
         # Game Name
         (Label(self, text='MensIco', underline=1)
@@ -39,9 +39,9 @@ class MainWindow(Tk):
 
         # MensIco Icon
         icon = PhotoImage(file='data/resources/Icon.gif')
-        iconLabel = Label(self, text='MensIco', image=icon)
-        iconLabel.icon = icon
-        iconLabel.pack(side=LEFT, padx=5, pady=5)
+        icon_label = Label(self, text='MensIco', image=icon)
+        icon_label.icon = icon
+        icon_label.pack(side=LEFT, padx=5, pady=5)
 
         # mode indicator variable
         mode = IntVar()
@@ -55,7 +55,7 @@ class MainWindow(Tk):
 
         # launch button
         (Button(self, text='Launch',
-                command=lambda: self.startProgram(mode))
+                command=lambda: self.start_program(mode))
          .pack(side=TOP, padx=5, pady=5))
 
         # what's this button
@@ -72,7 +72,7 @@ class MainWindow(Tk):
 
         # window init
         helpwindow = Toplevel(self)
-        helpwindow.title(engine.VERSION + ' test results')
+        helpwindow.title(engine.__version__ + ' test results')
 
         # show the description
         description = open('data/resources/description.txt').read()
@@ -84,7 +84,7 @@ class MainWindow(Tk):
 
         self.help.protocol('WM_DELETE_WINDOW', helpwindow.destroy)
 
-    def startProgram(self, mode):
+    def start_program(self, mode):
         """ Launch the program in the selected mode. """
 
         # if user wants to play, launch GameWindow
@@ -197,17 +197,17 @@ class GameWindow(Tk):
         }
 
         # position ids
-        self.ownPosition = 3
-        self.oppPosition = 38
-        self.ownDec = IntVar()
-        self.oppDec = IntVar()
+        self.own_position = 3
+        self.opp_position = 38
+        self.own_dec = IntVar()
+        self.opp_dec = IntVar()
 
         self.draw_main()
 
     # ---------------------- Init: Window drawing -------------------------
     def draw_main(self):
         # name the window
-        self.title(engine.VERSION)
+        self.title(engine.__version__)
 
         # Create canvas
         self.can = Canvas(self, width=350, height=500, bg='dark green')
@@ -243,33 +243,33 @@ class GameWindow(Tk):
                              fill='red', font='Arial 14 bold', tags='wins')
 
         # draw players
-        self.putTri(self.ownPosition, self.oppPosition)
+        self.put_triangle(self.own_position, self.opp_position)
         # darkens the possible steps
-        self.putSquares()
+        self.put_squares()
 
         # create buttons
         # step button
-        self.stepButton = Button(self, text='Step', command=self.doStep)
-        self.stepButton.pack(side=TOP, padx=5, pady=5)
+        self.step_button = Button(self, text='Step', command=self.do_step)
+        self.step_button.pack(side=TOP, padx=5, pady=5)
 
         # "Learner" sign to separate from the step button
         Label(self, text='\n\nLearner').pack(side=TOP, padx=5, pady=5)
 
         # load strategy button
-        self.loadButton = Button(
+        self.load_button = Button(
             self,
             text='Load',
             command=lambda: self.game.player1.loadStrategy(askopenfilename(
                 filetypes=[('MensIco Strategy Files', '*.mstr')])))
-        self.loadButton.pack(side=TOP, padx=5, pady=5)
+        self.load_button.pack(side=TOP, padx=5, pady=5)
 
         # save strategy button
-        self.saveButton = Button(
+        self.save_button = Button(
             self,
             text='Save',
             command=lambda: self.game.player1.saveStrategy(asksaveasfilename(
                 filetypes=[('MensIco Strategy Files', '*.mstr')])))
-        self.saveButton.pack(side=TOP, padx=5, pady=5)
+        self.save_button.pack(side=TOP, padx=5, pady=5)
 
         # quit button
         (Button(self, text='Quit', command=self.close_all)
@@ -277,18 +277,18 @@ class GameWindow(Tk):
         self.protocol('WM_DELETE_WINDOW', self.close_all)
 
         # reset button
-        self.resetButton = Button(self, text='Reset',
-                                  command=self.reset, state=['disabled'])
-        self.resetButton.pack(side=BOTTOM, padx=5, pady=5)
+        self.reset_button = Button(self, text='Reset',
+                                   command=self.reset, state=['disabled'])
+        self.reset_button.pack(side=BOTTOM, padx=5, pady=5)
 
         # mouse event handler
         self.can.bind("<Button-1>", self.putX)
         # osx fix
-        self.can.bind("<Button-2>", self.putCircle)
-        self.can.bind("<Button-3>", self.putCircle)
+        self.can.bind("<Button-2>", self.put_circle)
+        self.can.bind("<Button-3>", self.put_circle)
 
-        # space also work as doStep button
-        self.bind("<space>", self.doStepByButton)
+        # space also work as do_step button
+        self.bind("<space>", self.do_step_button)
 
     # -------------------------- Window Methods -------------------------------
 
@@ -305,7 +305,7 @@ class GameWindow(Tk):
             if x > value[0] and x < value[2] and y > value[1] and y < value[3]:
                 return key
 
-    def drawCircle(self, x, y):
+    def draw_circle(self, x, y):
         """First remove any existing circle from the canvas,
         then draw a new circle to the given coordinates. """
         # we only want 1 circle a time,
@@ -324,27 +324,27 @@ class GameWindow(Tk):
         self.can.create_line(x + 5, y + 45, x + 45, y + 5,
                              width=5, fill='green', tags='X')
 
-    def drawTriangle(self, x, y, player):
+    def draw_triangle(self, x, y, player):
         """First remove any existing triangle from the canvas,
         then draw a new one to the given coordinates."""
         # create a separate tagname for p1 and p2
-        tagName = 'player' + str(player)
+        tag_name = 'player' + str(player)
         # delete any previous instance
-        self.can.delete(tagName)
+        self.can.delete(tag_name)
         if player == 1:
             self.can.create_polygon(x + 25, y + 5,
                                     x + 5, y + 45,
                                     x + 45, y + 45,
                                     width=5, fill='orange', outline='black',
-                                    tags=tagName)
+                                    tags=tag_name)
         else:
             self.can.create_polygon(x + 5, y + 5,
                                     x + 45, y + 5,
                                     x + 25, y + 45,
                                     width=5, fill='blue', outline='black',
-                                    tags=tagName)
+                                    tags=tag_name)
 
-    def drawUnitedTriangle(self, x, y):
+    def draw_united_triangle(self, x, y):
         """First remove any existing triangle from the canvas,
         then draw a new one to the given coordinates."""
         # delete any previous instance
@@ -357,7 +357,7 @@ class GameWindow(Tk):
                                 width=5, fill='blue', outline='black',
                                 tags='player2')
 
-    def drawSquare(self, x, y):
+    def draw_square(self, x, y):
         """ Draws a new square. """
         # draw the square
         self.can.create_rectangle(x + 1, y + 1, x + 49, y + 49,
@@ -366,7 +366,7 @@ class GameWindow(Tk):
     def validX(self, id):
         """ Checks if the selected cell is valid for an X. """
 
-        act = self.own_pos[self.ownPosition]
+        act = self.own_pos[self.own_position]
         next = self.own_pos[id]
 
         return (act[0] + 1 == next[0] and
@@ -374,10 +374,10 @@ class GameWindow(Tk):
                  act[1] == next[1] or
                  act[1] - 1 == next[1]))
 
-    def validCircle(self, id):
+    def valid_circle(self, id):
         """ Checks if the selected cell is valid for a Circle. """
 
-        act = self.opp_pos[self.oppPosition]
+        act = self.opp_pos[self.opp_position]
         next = self.opp_pos[id]
 
         return (act[0] + 1 == next[0] and
@@ -385,16 +385,16 @@ class GameWindow(Tk):
                  act[1] == next[1] or
                  act[1] - 1 == next[1]))
 
-    def putCircle(self, event):
+    def put_circle(self, event):
         """ Draw a Circle to the selected sqare. """
         # if a circle can be put here ...
-        if self.validCircle(self.inside(event.x, event.y)) == 1:
+        if self.valid_circle(self.inside(event.x, event.y)) == 1:
             print 'click'
             # get and set our decision's id as well
-            self.oppDec = self.inside(event.x, event.y)
+            self.opp_dec = self.inside(event.x, event.y)
             # get the corresponding coordinates, and draw the circle
-            dest = self.positions[self.oppDec]
-            self.drawCircle(dest[0], dest[1])
+            dest = self.positions[self.opp_dec]
+            self.draw_circle(dest[0], dest[1])
         else:
             print 'wrong_click'
 
@@ -404,14 +404,14 @@ class GameWindow(Tk):
         if self.validX(self.inside(event.x, event.y)) == 1:
             print 'click'
             # get and set our decision's id as well
-            self.ownDec = self.inside(event.x, event.y)
+            self.own_dec = self.inside(event.x, event.y)
             # get the corresponding coordinates, and draw the X
-            dest = self.positions[self.ownDec]
+            dest = self.positions[self.own_dec]
             self.drawX(dest[0], dest[1])
         else:
             print 'wrong_click'
 
-    def putTri(self, key_p1, key_p2):
+    def put_triangle(self, key_p1, key_p2):
         """ Draw the players. """
         # from ids get the coordinates
         dest_p1 = self.positions[key_p1]
@@ -420,13 +420,13 @@ class GameWindow(Tk):
         # check if the players are in the same cell
         if key_p1 == key_p2:
             # draw a "united triangle constallation"
-            self.drawUnitedTriangle(dest_p1[0], dest_p1[1])
+            self.draw_united_triangle(dest_p1[0], dest_p1[1])
         else:
             # draw separate triangles for the players
-            self.drawTriangle(dest_p1[0], dest_p1[1], 1)
-            self.drawTriangle(dest_p2[0], dest_p2[1], 2)
+            self.draw_triangle(dest_p1[0], dest_p1[1], 1)
+            self.draw_triangle(dest_p2[0], dest_p2[1], 2)
 
-    def putSquares(self):
+    def put_squares(self):
         """ Darkens cells for the possible steps. """
 
         # delete previous squares
@@ -436,83 +436,83 @@ class GameWindow(Tk):
         candidates = []
 
         # get current positions
-        ownAct = self.own_pos[self.ownPosition]
-        oppAct = self.opp_pos[self.oppPosition]
+        own_act = self.own_pos[self.own_position]
+        opp_act = self.opp_pos[self.opp_position]
 
         # store the id's of the next possible steps
         candidates.append(find_key(self.own_pos,
-                                   [ownAct[0] + 1, ownAct[1] - 1]))
+                                   [own_act[0] + 1, own_act[1] - 1]))
         candidates.append(find_key(self.own_pos,
-                                   [ownAct[0] + 1, ownAct[1]]))
+                                   [own_act[0] + 1, own_act[1]]))
         candidates.append(find_key(self.own_pos,
-                                   [ownAct[0] + 1, ownAct[1] + 1]))
+                                   [own_act[0] + 1, own_act[1] + 1]))
 
         # store the id's of the next possible opponent steps
         candidates.append(find_key(self.opp_pos,
-                                   [oppAct[0] + 1, oppAct[1] - 1]))
+                                   [opp_act[0] + 1, opp_act[1] - 1]))
         candidates.append(find_key(self.opp_pos,
-                                   [oppAct[0] + 1, oppAct[1]]))
+                                   [opp_act[0] + 1, opp_act[1]]))
         candidates.append(find_key(self.opp_pos,
-                                   [oppAct[0] + 1, oppAct[1] + 1]))
+                                   [opp_act[0] + 1, opp_act[1] + 1]))
 
         # if it's a valid position, put a square there
         for candidate in candidates:
             if candidate is not None:
                 act = self.positions[candidate]
-                self.drawSquare(act[0], act[1])
+                self.draw_square(act[0], act[1])
 
     # ------------------------- Game Related Methods ------------------------
 
-    def validSetup(self):
+    def valid_setup(self):
         """ Checks if the setup is correct. """
         # if we have a circle and an X ...
         if self.can.find_withtag('circle') and self.can.find_withtag('X'):
             # get the current positions
-            actOwn = self.own_pos[self.ownPosition]
-            nextOwn = self.own_pos[self.ownDec]
-            actOpp = self.opp_pos[self.oppPosition]
-            nextOpp = self.opp_pos[self.oppDec]
+            act_own = self.own_pos[self.own_position]
+            next_own = self.own_pos[self.own_dec]
+            act_opp = self.opp_pos[self.opp_position]
+            next_opp = self.opp_pos[self.opp_dec]
             # check if the circle is in front of the current position
             # and if the X is in the right place too ...
-            if ((actOwn[0] + 1 == nextOwn[0] and
-                 (actOwn[1] - 1 == nextOwn[1] or
-                  actOwn[1] == nextOwn[1] or
-                  actOwn[1] + 1 == nextOwn[1])) and
+            if ((act_own[0] + 1 == next_own[0] and
+                 (act_own[1] - 1 == next_own[1] or
+                  act_own[1] == next_own[1] or
+                  act_own[1] + 1 == next_own[1])) and
 
-                (actOpp[0] + 1 == nextOpp[0] and
-                 (actOpp[1] - 1 == nextOpp[1] or
-                  actOpp[1] == nextOpp[1] or
-                  actOpp[1] + 1 == nextOpp[1]))):
+                (act_opp[0] + 1 == next_opp[0] and
+                 (act_opp[1] - 1 == next_opp[1] or
+                  act_opp[1] == next_opp[1] or
+                  act_opp[1] + 1 == next_opp[1]))):
                 # everything is fine!
                 return 1
             else:
                 # Circle/X should be replaced!
                 print "error!"
-                print self.own_pos[self.ownPosition], self.own_pos[self.ownDec]
-                print self.opp_pos[self.oppPosition], self.opp_pos[self.oppDec]
+                print self.own_pos[self.own_position], self.own_pos[self.own_dec]
+                print self.opp_pos[self.opp_position], self.opp_pos[self.opp_dec]
                 return 0
         else:
             # Circle/X should be selected!
             # print "error! missing signs!"
             return 0
 
-    def doStepByButton(self, event):
-        self.doStep()
+    def do_step_button(self, event):
+        self.do_step()
 
     # do one step!
-    def doStep(self):
+    def do_step(self):
         """ Setup the decisions, and do one step. """
         # if it's not game over yet ...
         if not self.game.gameOver == 1:
             # and if the current setup is valid ...
-            if self.validSetup() == 1:
+            if self.valid_setup() == 1:
                 # the user should not save or load during a match!
-                self.loadButton.configure(state=['disabled'])
-                self.saveButton.configure(state=['disabled'])
+                self.load_button.configure(state=['disabled'])
+                self.save_button.configure(state=['disabled'])
 
                 # get the coordinates from the ids
-                X = self.own_pos[self.ownDec]
-                Y = self.opp_pos[self.oppDec]
+                X = self.own_pos[self.own_dec]
+                Y = self.opp_pos[self.opp_dec]
 
                 options = [X, Y]
 
@@ -520,14 +520,14 @@ class GameWindow(Tk):
                 self.game.doOneStep(engine.LEARNINGTYPE, options)
 
                 # set the positions from the result of the game.doOneStep
-                self.ownPosition = find_key(
+                self.own_position = find_key(
                     self.own_pos, self.game.player2.getOwnCoord())
-                self.oppPosition = find_key(
+                self.opp_position = find_key(
                     self.opp_pos, self.game.player2.getOppCoord())
 
                 # draw the triagles and shadings
-                self.putSquares()
-                self.putTri(self.ownPosition, self.oppPosition)
+                self.put_squares()
+                self.put_triangle(self.own_position, self.opp_position)
 
                 # delete the cirle and the X
                 self.can.delete('circle')
@@ -549,13 +549,13 @@ class GameWindow(Tk):
                 text=str(self.game.player1.getWins()))
 
             # set button states
-            self.stepButton.configure(state=['disabled'])
-            self.resetButton.configure(state=['normal'])
-            self.loadButton.configure(state=['normal'])
-            self.saveButton.configure(state=['normal'])
+            self.step_button.configure(state=['disabled'])
+            self.reset_button.configure(state=['normal'])
+            self.load_button.configure(state=['normal'])
+            self.save_button.configure(state=['normal'])
 
             # trolling
-            if self.oppPosition in [1, 2, 3, 4, 5]:
+            if self.opp_position in [1, 2, 3, 4, 5]:
                 print 'Too bad!'
 
     def reset(self):
@@ -564,22 +564,22 @@ class GameWindow(Tk):
         self.game.reset()
 
         # set the players to their intended place
-        self.ownPosition = find_key(self.own_pos,
-                                    self.game.player2.getOwnCoord())
-        self.oppPosition = find_key(self.opp_pos,
-                                    self.game.player2.getOppCoord())
-        self.putTri(self.ownPosition, self.oppPosition)
+        self.own_position = find_key(self.own_pos,
+                                     self.game.player2.getOwnCoord())
+        self.opp_position = find_key(self.opp_pos,
+                                     self.game.player2.getOppCoord())
+        self.put_triangle(self.own_position, self.opp_position)
 
         # remove the circles and Xs, and darkens possible steps
         self.can.delete('circle')
         self.can.delete('X')
-        self.putSquares()
+        self.put_squares()
 
         # configure the buttons
-        self.resetButton.configure(state=['disabled'])
-        self.stepButton.configure(state=['normal'])
-        self.loadButton.configure(state=['normal'])
-        self.saveButton.configure(state=['normal'])
+        self.reset_button.configure(state=['disabled'])
+        self.step_button.configure(state=['normal'])
+        self.load_button.configure(state=['normal'])
+        self.save_button.configure(state=['normal'])
 
 
 # -----------------------------------------------------------------------------
@@ -603,12 +603,12 @@ class TestWindow(Tk):
         self.game = BoardInGUI()
 
         # title of the window
-        self.title(engine.VERSION + ' tester interface')
+        self.title(engine.__version__ + ' tester interface')
 
         # option variables
         # learner (default: NULL learner)
-        self.selectedLearner = IntVar(master=self)
-        self.selectedLearner.set(0)
+        self.selected_learner = IntVar(master=self)
+        self.selected_learner.set(0)
         # list of the learners for radiobuttons
         self.options = [
             'NULL learner',
@@ -621,48 +621,48 @@ class TestWindow(Tk):
 
         # create setup area
         # create a separate frame for the setup
-        self.setupFrame = Frame(self)
-        self.setupFrame.pack(side=LEFT, padx=5, pady=5)
+        self.setup_frame = Frame(self)
+        self.setup_frame.pack(side=LEFT, padx=5, pady=5)
         # create the radiobuttons
         for id, text in enumerate(self.options):
-            (Radiobutton(self.setupFrame, text=text, value=id,
-                         variable=self.selectedLearner)
+            (Radiobutton(self.setup_frame, text=text, value=id,
+                         variable=self.selected_learner)
              .pack(side=TOP, padx=5, pady=5))
 
         # create a scale
-        self.numberOfGames = Scale(self.setupFrame,
-                                   length=250,
-                                   orient=HORIZONTAL,
-                                   label='Number of games to play:',
-                                   troughcolor='dark grey',
-                                   sliderlength=20,
-                                   showvalue=1,
-                                   from_=1,
-                                   to=10000,
-                                   tickinterval=5000)
-        self.numberOfGames.pack(padx=5, pady=5)
+        self.number_of_games = Scale(self.setup_frame,
+                                     length=250,
+                                     orient=HORIZONTAL,
+                                     label='Number of games to play:',
+                                     troughcolor='dark grey',
+                                     sliderlength=20,
+                                     showvalue=1,
+                                     from_=1,
+                                     to=10000,
+                                     tickinterval=5000)
+        self.number_of_games.pack(padx=5, pady=5)
 
         # create buttons
         # test button
-        self.testButton = Button(self, text='Test', command=self.test)
-        self.testButton.pack(side=TOP, padx=5, pady=5)
+        self.test_button = Button(self, text='Test', command=self.test)
+        self.test_button.pack(side=TOP, padx=5, pady=5)
 
         # Caption
         Label(self, text='Opponent').pack(side=TOP, padx=5)
 
         # Load opponent strategy button
-        self.loadButton = Button(
+        self.load_button = Button(
             self,
             text='Load',
             command=lambda: self.game.player2.loadStrategy(askopenfilename(
                 filetypes=[('MensIco Strategy Files', '*.mstr')])))
-        self.loadButton.pack(side=TOP, padx=5)
+        self.load_button.pack(side=TOP, padx=5)
 
         # Caption
         Label(self, text='\nLearner').pack(side=TOP, padx=5)
 
         # Reset learner button
-        (Button(self, text='Reset', command=self.resetLearner)
+        (Button(self, text='Reset', command=self.reset_learner)
          .pack(side=TOP, padx=5))
 
         # quit button
@@ -677,14 +677,14 @@ class TestWindow(Tk):
 
         # try to close the result window
         try:
-            self.closeResults()
+            self.close_results()
         except Exception as e:
             print e
         # close the window and quit from the main window
         self.destroy()
         self.parent.quit()
 
-    def closeResults(self):
+    def close_results(self):
         """ Close results subwindow."""
 
         # close result window
@@ -695,9 +695,9 @@ class TestWindow(Tk):
         self.game.player2.setWins(0)
 
         # allow the user to execute a new testrun
-        self.testButton.configure(state=['normal'])
+        self.test_button.configure(state=['normal'])
 
-    def resetLearner(self):
+    def reset_learner(self):
         """ Reset the learner to the initial values. """
         self.game.player1.position_matrix()
         self.game.player1.opponent_matrix()
@@ -707,12 +707,12 @@ class TestWindow(Tk):
     def test(self):
         """ Test with the current setup. """
 
-        # do not click on the testButton too many times!
-        self.testButton.configure(state=['disabled'])
+        # do not click on the test_button too many times!
+        self.test_button.configure(state=['disabled'])
 
         # get the learner type and the number of games to play
-        numGam = self.numberOfGames.get()
-        ltype = self.selectedLearner.get()
+        num_game = self.number_of_games.get()
+        ltype = self.selected_learner.get()
         matrices = self.game.getMatrices()
         # logging variables
         self.error = engine.Error(matrices[0], matrices[1],
@@ -724,10 +724,10 @@ class TestWindow(Tk):
         self.progress.title('Progress')
         bar = Progressbar(self.progress, orient='horizontal', length=400)
         bar.pack(padx=5, pady=5)
-        amount = 100.0 / (numGam / 100.)
+        amount = 100.0 / (num_game / 100.)
 
-        # run the test numberOfGames times
-        for i in range(numGam):
+        # run the test number_of_games times
+        for i in range(num_game):
             while not self.game.isGameOver():
                 self.game.doOneStep(ltype)
             # log the error value and the win ratio
@@ -759,7 +759,7 @@ class TestWindow(Tk):
         # when done with computing,
         # show the result in a pop-up window
         self.results = Toplevel(self)
-        self.results.title(engine.VERSION + ' test results')
+        self.results.title(engine.__version__ + ' test results')
 
         # put the results into tabs
         bar = TabBar(self.results)
@@ -778,10 +778,10 @@ class TestWindow(Tk):
             self.results.resultPlotFrameAI, width=200, height=150)
 
         # draw coordinate systems
-        self.drawCoordSystem(self.results.resultPlotFrameAI.resultCanvasPos,
-                             'AI step probabilities')
-        self.drawCoordSystem(self.results.resultPlotFrameAI.resultCanvasOpp,
-                             'AI pred probabilities')
+        self.draw_coord_system(self.results.resultPlotFrameAI.resultCanvasPos,
+                               'AI step probabilities')
+        self.draw_coord_system(self.results.resultPlotFrameAI.resultCanvasOpp,
+                               'AI pred probabilities')
 
         # pack canvases
         self.results.resultPlotFrameAI.resultCanvasPos.pack(side=LEFT,
@@ -803,10 +803,10 @@ class TestWindow(Tk):
             self.results.resultPlotFrameOpp, width=200, height=150)
 
         # draw coordinate systems
-        self.drawCoordSystem(self.results.resultPlotFrameOpp.resultCanvasPos,
-                             'Static Opponent step probabilities')
-        self.drawCoordSystem(self.results.resultPlotFrameOpp.resultCanvasOpp,
-                             'Static Opponent pred probabilities')
+        self.draw_coord_system(self.results.resultPlotFrameOpp.resultCanvasPos,
+                               'Static Opponent step probabilities')
+        self.draw_coord_system(self.results.resultPlotFrameOpp.resultCanvasOpp,
+                               'Static Opponent pred probabilities')
 
         # pack canvases
         self.results.resultPlotFrameOpp.resultCanvasOpp.pack(side=LEFT,
@@ -822,21 +822,21 @@ class TestWindow(Tk):
         self.results.resultPlotRadiobuttonFrame = Frame(tab_probability_plots)
 
         # variable for the value
-        self.results.resultPlotRadiobuttonFrame.lineNumber = IntVar(
+        self.results.resultPlotRadiobuttonFrame.line_number = IntVar(
             master=tab_probability_plots)
-        self.results.resultPlotRadiobuttonFrame.lineNumber.set(1)
+        self.results.resultPlotRadiobuttonFrame.line_number.set(1)
 
         # then put them into it
         for i in range(1, 9):
             Radiobutton(
                 self.results.resultPlotRadiobuttonFrame,
-                text=str(i), value=i, command=self.drawCurves,
-                variable=self.results.resultPlotRadiobuttonFrame.lineNumber
+                text=str(i), value=i, command=self.draw_curves,
+                variable=self.results.resultPlotRadiobuttonFrame.line_number
             ).pack(side=LEFT)
 
         # draw the first curve
-        self.results.resultPlotRadiobuttonFrame.lineNumber.set(1)
-        self.drawCurves()
+        self.results.resultPlotRadiobuttonFrame.line_number.set(1)
+        self.draw_curves()
 
         # pack the frame
         self.results.resultPlotRadiobuttonFrame.pack(padx=5, pady=5)
@@ -881,10 +881,10 @@ class TestWindow(Tk):
                                                width=200, height=150)
 
         # draw coordinate system for barplot
-        self.drawCoordSystem(self.results.winRatioBarPlot,
-                             'AI - Static opponent win ratio')
+        self.draw_coord_system(self.results.winRatioBarPlot,
+                               'AI - Static opponent win ratio')
         # draw the barplot
-        self.drawWinBars(numGam)
+        self.draw_win_bars(num_game)
         # pack the canvas
         self.results.winRatioBarPlot.pack(side=LEFT, padx=5, pady=5)
 
@@ -897,28 +897,28 @@ class TestWindow(Tk):
             winlist = []
             for i, val in self.wins:
                 winlist.append(val)
-            self.drawCoordSystem(
+            self.draw_coord_system(
                 self.results.winRatioPlot,
                 'AI - Static opponent win ratio through iterations',
                 space=180. / len(self.wins),
                 x_ticks=len(self.wins))
-            self.drawErrorCurve(self.results.winRatioPlot,
-                                winlist,
-                                180. / len(self.wins))
+            self.draw_error_curve(self.results.winRatioPlot,
+                                  winlist,
+                                  180. / len(self.wins))
             self.results.winRatioPlot.pack(padx=5, pady=5)
         # larger scope
         elif len(self.wins) <= 150:
             winlist = []
             for i, val in self.wins:
                 winlist.append(val)
-            self.drawCoordSystem(
+            self.draw_coord_system(
                 self.results.winRatioPlot,
                 'AI - Static opponent win ratio through iterations',
                 no_draw=1)
-            self.drawErrorCurve(self.results.winRatioPlot,
-                                winlist,
-                                180. / len(self.wins),
-                                110)
+            self.draw_error_curve(self.results.winRatioPlot,
+                                  winlist,
+                                  180. / len(self.wins),
+                                  110)
             self.results.winRatioPlot.pack(padx=5, pady=5)
         # show every 100th error ratio
         else:
@@ -926,14 +926,14 @@ class TestWindow(Tk):
             for i, val in self.wins:
                 if i % 60 == 0:
                     winlist.append(val)
-            self.drawCoordSystem(
+            self.draw_coord_system(
                 self.results.winRatioPlot,
                 'AI - Static opponent win ratio through iterations',
                 no_draw=1)
-            self.drawErrorCurve(self.results.winRatioPlot,
-                                winlist,
-                                180. / len(winlist),
-                                110)
+            self.draw_error_curve(self.results.winRatioPlot,
+                                  winlist,
+                                  180. / len(winlist),
+                                  110)
             self.results.winRatioPlot.pack(padx=5, pady=5)
 
         # pack the frame
@@ -943,7 +943,7 @@ class TestWindow(Tk):
         if len(self.wins) > 0:
             # Log button
             Button(tab_win_ratio, text='Log win ratio',
-                   command=lambda: self.doLog(self.wins)).pack(padx=5, pady=5)
+                   command=lambda: self.do_log(self.wins)).pack(padx=5, pady=5)
 
         # One for the error-level change
         tab_error_level = Tab(self.results, 'Error')
@@ -977,10 +977,10 @@ class TestWindow(Tk):
             # create the plot for the first 15 iterations
             self.results.errorRatePlot15 = Canvas(self.results.errorFrame,
                                                   width=200, height=150)
-            self.drawCoordSystem(self.results.errorRatePlot15,
-                                 'Error value in regard of iterations',
-                                 y_caption, space, len(list_15))
-            self.drawErrorCurve(self.results.errorRatePlot15, list_15, space)
+            self.draw_coord_system(self.results.errorRatePlot15,
+                                   'Error value in regard of iterations',
+                                   y_caption, space, len(list_15))
+            self.draw_error_curve(self.results.errorRatePlot15, list_15, space)
             self.results.errorRatePlot15.pack(side=LEFT, padx=5, pady=5)
 
         # if less than or equals to 150 rounds happened:
@@ -1004,21 +1004,21 @@ class TestWindow(Tk):
             # create the plot for the first 15 iterations
             self.results.errorRatePlot15 = Canvas(self.results.errorFrame,
                                                   width=200, height=150)
-            self.drawCoordSystem(self.results.errorRatePlot15,
-                                 'Error value in regard of iterations',
-                                 y_caption, space_15, len(list_15))
-            self.drawErrorCurve(self.results.errorRatePlot15,
-                                list_15, space_15)
+            self.draw_coord_system(self.results.errorRatePlot15,
+                                   'Error value in regard of iterations',
+                                   y_caption, space_15, len(list_15))
+            self.draw_error_curve(self.results.errorRatePlot15,
+                                  list_15, space_15)
             self.results.errorRatePlot15.pack(side=LEFT, padx=5, pady=5)
 
             # create the plot for the first 150 iterations
             self.results.errorRatePlot150 = Canvas(self.results.errorFrame,
                                                    width=200, height=150)
-            self.drawCoordSystem(self.results.errorRatePlot150,
-                                 'Error value in regard of iterations',
-                                 y_caption, space_150, len(list_150), 1)
-            self.drawErrorCurve(self.results.errorRatePlot150,
-                                list_150, space_150)
+            self.draw_coord_system(self.results.errorRatePlot150,
+                                   'Error value in regard of iterations',
+                                   y_caption, space_150, len(list_150), 1)
+            self.draw_error_curve(self.results.errorRatePlot150,
+                                  list_150, space_150)
             self.results.errorRatePlot150.pack(side=LEFT, padx=5, pady=5)
 
         # if more than 150 rounds happened:
@@ -1048,31 +1048,31 @@ class TestWindow(Tk):
             # create the plot for the first 15 iterations
             self.results.errorRatePlot15 = Canvas(self.results.errorFrame,
                                                   width=200, height=150)
-            self.drawCoordSystem(self.results.errorRatePlot15,
-                                 'Error value in regard of iterations',
-                                 y_caption, space_15, len(list_15))
-            self.drawErrorCurve(self.results.errorRatePlot15,
-                                list_15, space_15)
+            self.draw_coord_system(self.results.errorRatePlot15,
+                                   'Error value in regard of iterations',
+                                   y_caption, space_15, len(list_15))
+            self.draw_error_curve(self.results.errorRatePlot15,
+                                  list_15, space_15)
             self.results.errorRatePlot15.pack(side=LEFT, padx=5, pady=5)
 
             # create the plot for the first 150 iterations
             self.results.errorRatePlot150 = Canvas(self.results.errorFrame,
                                                    width=200, height=150)
-            self.drawCoordSystem(self.results.errorRatePlot150,
-                                 'Error value in regard of iterations',
-                                 y_caption, space_150, len(list_150), 1)
-            self.drawErrorCurve(self.results.errorRatePlot150,
-                                list_150, space_150)
+            self.draw_coord_system(self.results.errorRatePlot150,
+                                   'Error value in regard of iterations',
+                                   y_caption, space_150, len(list_150), 1)
+            self.draw_error_curve(self.results.errorRatePlot150,
+                                  list_150, space_150)
             self.results.errorRatePlot150.pack(side=LEFT, padx=5, pady=5)
 
             # create the plot for every 100th iteration
             self.results.errorRatePlot10000 = Canvas(self.results.errorFrame,
                                                      width=200, height=150)
-            self.drawCoordSystem(self.results.errorRatePlot10000,
-                                 'Error value in regard of iterations',
-                                 y_caption, space_10000, len(list_10000), 1)
-            self.drawErrorCurve(self.results.errorRatePlot10000,
-                                list_10000, space_10000)
+            self.draw_coord_system(self.results.errorRatePlot10000,
+                                   'Error value in regard of iterations',
+                                   y_caption, space_10000, len(list_10000), 1)
+            self.draw_error_curve(self.results.errorRatePlot10000,
+                                  list_10000, space_10000)
             self.results.errorRatePlot10000.pack(side=LEFT, padx=5, pady=5)
 
         # pack the frame
@@ -1083,7 +1083,7 @@ class TestWindow(Tk):
             # Log button
             Button(
                 tab_error_level, text='Log error values',
-                command=lambda: self.doLog(self.error_list)
+                command=lambda: self.do_log(self.error_list)
             ).pack(padx=5, pady=5)
 
         # complete the tab system
@@ -1093,14 +1093,14 @@ class TestWindow(Tk):
         bar.show()
 
         # close window button
-        (Button(self.results, text='Close', command=self.closeResults)
+        (Button(self.results, text='Close', command=self.close_results)
          .pack(side=BOTTOM, padx=5, pady=5))
-        self.results.protocol('WM_DELETE_WINDOW', self.closeResults)
+        self.results.protocol('WM_DELETE_WINDOW', self.close_results)
 
 # -------------------------- Drawing methods ----------------------------------
 
-    def drawCoordSystem(self, canvas, caption, y_caption='1.0',
-                        space=25, x_ticks=7, no_draw=0):
+    def draw_coord_system(self, canvas, caption, y_caption='1.0',
+                          space=25, x_ticks=7, no_draw=0):
         """ Draws a basic coordinate system. (Size: 150 x 200 (height x width))
         """
 
@@ -1125,7 +1125,7 @@ class TestWindow(Tk):
         # tick captions on y axis
         canvas.create_text(25, 30, text=y_caption, font='Arial 7')
 
-    def drawWinBars(self, numberOfGames):
+    def draw_win_bars(self, number_of_games):
         """ Draw win bars. """
 
         # remove previous bars
@@ -1138,12 +1138,12 @@ class TestWindow(Tk):
                                                  text='Static Opponent')
 
         # get the heights
-        if numberOfGames == 0:
+        if number_of_games == 0:
             heights = [0.0, 0.0]
         else:
             p1wins = float(self.game.player1.getWins())
             p2wins = float(self.game.player2.getWins())
-            heights = [p1wins / numberOfGames, p2wins / numberOfGames]
+            heights = [p1wins / number_of_games, p2wins / number_of_games]
 
         # draw the bars
         self.results.winRatioBarPlot.create_rectangle(
@@ -1159,7 +1159,7 @@ class TestWindow(Tk):
         self.results.winRatioBarPlot.create_text(
             122, 40, text=str(self.game.player2.getWins()), font='Arial 7')
 
-    def drawCurves(self):
+    def draw_curves(self):
         """ Draw the curves to the plots. """
 
         # remove previous curves
@@ -1169,65 +1169,64 @@ class TestWindow(Tk):
         self.results.resultPlotFrameOpp.resultCanvasOpp.delete('curve')
 
         # get the line number
-        lineNumber = (
-            self.results.resultPlotRadiobuttonFrame.lineNumber.get() - 1)
+        line_number = (
+            self.results.resultPlotRadiobuttonFrame.line_number.get() - 1)
         # create a list for the curves. Stores the coordinates.
-        AICurve_pos = []
-        AICurve_opp = []
-        OppCurve_pos = []
-        OppCurve_opp = []
+        ai_curve_pos = []
+        ai_curve_opp = []
+        opp_curve_pos = []
+        opp_curve_opp = []
         # for the actual line:
         for i in range(0, 7):
             # get the x and y coordinates...
             x = 10 + i * 25
-            AIY_pos = 1 - self.game.player1.getPosMatItem(lineNumber, i)
-            AIY_opp = 1 - self.game.player1.getOppMatItem(lineNumber, i)
-            OppY_pos = 1 - self.game.player2.getPosMatItem(lineNumber, i)
-            OppY_opp = 1 - self.game.player2.getOppMatItem(lineNumber, i)
+            ai_y_pos = 1 - self.game.player1.getPosMatItem(line_number, i)
+            ai_y_opp = 1 - self.game.player1.getOppMatItem(line_number, i)
+            opp_y_pos = 1 - self.game.player2.getPosMatItem(line_number, i)
+            opp_y_opp = 1 - self.game.player2.getOppMatItem(line_number, i)
             # and append them to the list.
-            AICurve_pos.append((x, AIY_pos * 140))
-            AICurve_opp.append((x, AIY_opp * 140))
-            OppCurve_pos.append((x, OppY_pos * 140))
-            OppCurve_opp.append((x, OppY_opp * 140))
+            ai_curve_pos.append((x, ai_y_pos * 140))
+            ai_curve_opp.append((x, ai_y_opp * 140))
+            opp_curve_pos.append((x, opp_y_pos * 140))
+            opp_curve_opp.append((x, opp_y_opp * 140))
 
         # finally, draw the curves
         self.results.resultPlotFrameAI.resultCanvasPos.create_line(
-            AICurve_pos, fill='red', smooth=1, tags='curve')
+            ai_curve_pos, fill='red', smooth=1, tags='curve')
         self.results.resultPlotFrameAI.resultCanvasOpp.create_line(
-            AICurve_opp, fill='red', smooth=1, tags='curve')
+            ai_curve_opp, fill='red', smooth=1, tags='curve')
         self.results.resultPlotFrameOpp.resultCanvasPos.create_line(
-            OppCurve_pos, fill='red', smooth=1, tags='curve')
+            opp_curve_pos, fill='red', smooth=1, tags='curve')
         self.results.resultPlotFrameOpp.resultCanvasOpp.create_line(
-            OppCurve_opp, fill='red', smooth=1, tags='curve')
+            opp_curve_opp, fill='red', smooth=1, tags='curve')
 
-    def drawErrorCurve(self, canvas, values, space, valueMultiplicator=10):
+    def draw_error_curve(self, canvas, values, space, value_multiplicator=10):
         """ Draw the error curves. """
 
         canvas.delete('curve')
         curve = []
 
         if len(values) == 1:
-            curve.append([10, 140 - values[0] * valueMultiplicator])
-            curve.append([180, 140 - values[0] * valueMultiplicator])
+            curve.append([10, 140 - values[0] * value_multiplicator])
+            curve.append([180, 140 - values[0] * value_multiplicator])
 
         else:
             for num, value in enumerate(values):
                 curve.append([10 + num * space,
-                              140 - value * valueMultiplicator])
+                              140 - value * value_multiplicator])
 
         canvas.create_line(curve, fill='red', smooth=1, tags='curve')
 
-    def doLog(self, logList):
+    def do_log(self, log_list):
         """ Save iterations and values from the given list to a .csv file. """
-
         try:
-            logFileName = asksaveasfilename(
+            log_file_name = asksaveasfilename(
                 filetypes=[('Comma Separated Values File', '*.csv')])
-            logFile = open(logFileName, 'w')
+            logfile = open(log_file_name, 'w')
         except:
-            print "Can't write to", logFileName, "!"
+            print "Can't write to", log_file_name, "!"
             raise
-        logFile.write("iteration; error\n")
-        for i, val in logList:
-            logFile.write(str(i) + '; ' + str(val) + '\n')
-        logFile.close()
+        logfile.write("iteration; error\n")
+        for i, val in log_list:
+            logfile.write(str(i) + '; ' + str(val) + '\n')
+        logfile.close()
