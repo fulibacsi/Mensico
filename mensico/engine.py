@@ -1,5 +1,7 @@
-#  The program implements the game MensIco, and some learning method to learn the opponent's
-#  strategy.
+# encoding: utf-8
+
+#  The program implements the game MensIco, and some learning method to learn
+#  the opponent's strategy.
 #
 #
 #  Classes:
@@ -10,7 +12,8 @@
 #          Implements a MensIco player.
 #
 #      - Board
-#          Implements the game's board, players, the actions, and the learning methods as well.
+#          Implements the game's board, players, the actions, and the
+#          learning methods as well.
 #
 #      - Error
 #          Implements error measuring.
@@ -31,11 +34,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import random
 import math
-from fractions import Fraction
+import random
 import itertools
+from fractions import Fraction
 
 from mensico.utils import lcm, weighted_choice  # TODO: check if input is nparray
 
@@ -77,7 +79,7 @@ LEARNINGTYPE = 2
 ERRORTYPE = 1
 
 # version number
-VERSION = 'MensIco2 v1.5 beta'
+__version__ = 'MensIco2 v1.5 beta'
 
 
 # -------------------------------------------------------------------------
@@ -111,105 +113,105 @@ class NProbMat(object):
         np.save(filename, self.matrix)
 
 
-# --------------------- Learning method related misc functions ----------------
-# greatest common multiply
+# class ProbMat:
+#     """Storing and managing probability matrices."""
 
-class ProbMat:
-    """Storing and managing probability matrices."""
+#     def __init__(self, x = 5, y = 8):
+#         """ Init a matrix with the given dimensions. """
 
-    def __init__(self, x = 5, y = 8):
-        """ Init a matrix with the given dimensions. """
-
-        self.matrix = [[0.0 for col in range(x+2)] for row in range(y)]
-        for i in range(2,len(self.matrix)):
-            for j in range(1,len(self.matrix[i])-1):
-                self.matrix[i][j] = 1.0/x
-        self.matrix[0][(x+2)/2] = 1.0
-        for i in range((x+2)/2-1, (x+2)/2+2, 1):
-            self.matrix[1][i] = 0.3
+#         self.matrix = [[0.0 for col in range(x+2)] for row in range(y)]
+#         for i in range(2,len(self.matrix)):
+#             for j in range(1,len(self.matrix[i])-1):
+#                 self.matrix[i][j] = 1.0/x
+#         self.matrix[0][(x+2)/2] = 1.0
+#         for i in range((x+2)/2-1, (x+2)/2+2, 1):
+#             self.matrix[1][i] = 0.3
 
 
-    # reset a probability matrix to the initial state
-    def __call__(self, x = 5, y = 8):
-        """ Reset a matrix with the given dimensions to the initial state. """
+#     # reset a probability matrix to the initial state
+#     def __call__(self, x = 5, y = 8):
+#         """ Reset a matrix with the given dimensions to the initial state. """
 
-        self.matrix = [[0.0 for col in range(x+2)] for row in range(y)]
-        for i in range(2,len(self.matrix)):
-            for j in range(1,len(self.matrix[i])-1):
-                self.matrix[i][j] = 1.0/x
-        self.matrix[0][(x+2)/2] = 1.0
-        for i in range((x+2)/2-1, (x+2)/2+2, 1):
-            self.matrix[1][i] = 0.3
-
-
-# setters, getters
-
-    # get the matrix
-    def getMatrix(self):
-        return self.matrix
-
-    # set the matrix to a specified matrix - NOT CHECKING!!!
-    def setMatrix(self, preset_matrix):
-        self.matrix = preset_matrix[:]
-
-    # get a specified matrix item
-    def getMatrixItem(self, x, y):
-        return self.matrix[x][y]
-
-    # set a specified matrix item to a value
-    def setMatrixItem(self, x, y, value):
-        self.matrix[x][y] = value
-
-# end of setters, getters
+#         self.matrix = [[0.0 for col in range(x+2)] for row in range(y)]
+#         for i in range(2, len(self.matrix)):
+#             for j in range(1, len(self.matrix[i]) - 1):
+#                 self.matrix[i][j] = 1.0 / x
+#         self.matrix[0][(x + 2) / 2] = 1.0
+#         for i in range((x + 2) / 2 - 1, (x + 2) / 2 + 2, 1):
+#             self.matrix[1][i] = 0.3
 
 
-    def rescale(self, line = -1):
-        """ Rescale the whole matrix, or one of the rows."""
+# # setters, getters
 
-        if line == -1:
-            # we rescale the whole matrix
-            for act in self.matrix:
-                # get the minimum value of the current row and add a small value to it
-                minimum = abs(min(act)) + MINFLOAT
-                # add this to every element in the act. row
-                for i in range(1,len(act)-1):
-                    if not act[i] == 0.0:
-                        act[i] = act[i] + minimum
-                # get the total value in the row...
-                summa = sum(act)
-                # and divide every element by this total value
-                for i in range(1,len(act)-1):
-                    act[i] = act[i]/summa
-        else:
-            # we rescale a row
-            act = self.matrix[line]
-            # get the minimum value of the row and add a small value to it
-            minimum = abs(min(act)) + MINFLOAT
-            # add this to every element in the row
-            for i in range(1,len(act)-1):
-                if not act[i] == 0.0:
-                    act[i] = act[i] + minimum
-            # get the total value in the row...
-            summa = sum(act)
-            # and divide every element by this total value
-            for i in range(1,len(act)-1):
-                act[i] = act[i]/summa
+#     # get the matrix
+#     def getMatrix(self):
+#         return self.matrix
+
+#     # set the matrix to a specified matrix - NOT CHECKING!!!
+#     def setMatrix(self, preset_matrix):
+#         self.matrix = preset_matrix[:]
+
+#     # get a specified matrix item
+#     def getMatrixItem(self, x, y):
+#         return self.matrix[x][y]
+
+#     # set a specified matrix item to a value
+#     def setMatrixItem(self, x, y, value):
+#         self.matrix[x][y] = value
+
+# # end of setters, getters
 
 
-    # log the matrix in a useable form
-    def logMatrix(self, logFileName):
-        """ Log the values of the matrix to the specified file."""
+#     def rescale(self, line = -1):
+#         """ Rescale the whole matrix, or one of the rows."""
 
-        try:
-            logFile = open(logFileName, 'w')
-        except:
-            print "Can't write to", logFileName, "!"
-            raise
-        logFile.write("x; y; value\n")
-        for i in range(0, len(self.matrix)):
-            for j in range(0, len(self.matrix[i])):
-                logFile.write(str(i) + '; ' + str(j) + '; ' + str(self.matrix[i][j]) + '\n')
-        logFile.close()
+#         if line == -1:
+#             # we rescale the whole matrix
+#             for act in self.matrix:
+#                 # get the minimum value of the current row and add 
+#                 # a small value to it
+#                 minimum = abs(min(act)) + MINFLOAT
+#                 # add this to every element in the act. row
+#                 for i in range(1,len(act)-1):
+#                     if not act[i] == 0.0:
+#                         act[i] = act[i] + minimum
+#                 # get the total value in the row...
+#                 summa = sum(act)
+#                 # and divide every element by this total value
+#                 for i in range(1,len(act)-1):
+#                     act[i] = act[i]/summa
+#         else:
+#             # we rescale a row
+#             act = self.matrix[line]
+#             # get the minimum value of the row and add a small value to it
+#             minimum = abs(min(act)) + MINFLOAT
+#             # add this to every element in the row
+#             for i in range(1,len(act)-1):
+#                 if not act[i] == 0.0:
+#                     act[i] = act[i] + minimum
+#             # get the total value in the row...
+#             summa = sum(act)
+#             # and divide every element by this total value
+#             for i in range(1,len(act)-1):
+#                 act[i] = act[i]/summa
+
+
+#     # log the matrix in a useable form
+#     def logMatrix(self, logFileName):
+#         """ Log the values of the matrix to the specified file."""
+
+#         try:
+#             logFile = open(logFileName, 'w')
+#         except:
+#             print "Can't write to", logFileName, "!"
+#             raise
+#         logFile.write("x; y; value\n")
+#         for i in range(0, len(self.matrix)):
+#             for j in range(0, len(self.matrix[i])):
+#                 logFile.write(str(i) + '; ' +
+#                               str(j) + '; ' + 
+#                               str(self.matrix[i][j]) + '\n')
+#         logFile.close()
 
 
 
